@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+message WelcomeMessage {
+    required uint64 id = 1;
+    required int32 key = 2;
+}
+
+message Response {
+    enum RequestType {
+        WELCOME_MESSAGE = 0;
+        LOGIN_FAIL = 1;
+    }
+    required RequestType type = 1;
+    optional WelcomeMessage welcomeMsg = 2;
+}

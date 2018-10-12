@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+enum RequestType {
+    LOGIN = 0;
+}
+
+enum CharacterClass {
+    WARRIOR = 0;
+    MAGE = 1;
+    PRIEST = 2;
+}
+
+message LoginRequest {
+    required string nickname = 1;
+    required CharacterClass class = 2;
+}
+
+message Request {
+    required RequestType type = 1;
+    required int32 key = 2;
+    optional LoginRequest login = 3;
+}

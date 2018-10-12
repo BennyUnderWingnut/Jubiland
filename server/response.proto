@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+message Response {
+    enum RequestType {
+        WELCOME_MESSAGE = 0;
+        LOGIN_FAIL = 1;
+        WORLD_STATE = 2;
+    }
+    required RequestType type = 1;
+    optional WelcomeMessage welcomeMsg = 2;
+}
+
+message WelcomeMessage {
+    required uint64 id = 1;
+    required int32 key = 2;
+}
+
+message WorldStateMessage {
+    repeated CharacterStatus charters = 1;
+}
+
+message RefuseLoginMessage {
+    enum RefuseType {
+        NICKNAME_TAKEN = 1;
+    }
+    required RefuseType type = 1;
+}
+
+message CharacterStatus {
+    enum CharacterClass {
+        WARRIOR = 0;
+        MAGE = 2;
+        PRIEST = 3;
+    }
+    required uint64 id = 1;
+    required string nickname = 2;
+    required CharacterClass class = 3;
+    required uint32 level = 4;
+    required uint32 exp = 5;
+    required uint32 pos_y = 6;
+    required uint32 pos_x = 7;
+    required uint32 hp = 8;
+    required uint32 mp = 9;
+}
