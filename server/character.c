@@ -18,13 +18,20 @@ const unsigned short EXP_TO_UPGRADE[] = {0, 100, 200, 300, 400, 500, 600, 700, 8
                                          4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000, 5100, 5200, 5300,
                                          5400, 5500, 5600, 5700, 5800, 5900, 0};
 
-Character *init_character(int class) {
-    if (class < 0 || class >= CLASS_TYPES)
-        return NULL;
+unsigned long last_character_id = 1;
+pthread_mutex_t last_character_id_lock;
+
+Character *init_character(int class, char *nickname) {
     Character *character = malloc(sizeof(character));
+    pthread_mutex_lock(&last_character_id_lock);
+    character->id = last_character_id++;
+    pthread_mutex_unlock(&last_character_id_lock);
+    strcpy(character->nickname, nickname);
     character->class = class;
     character->level = 1;
     character->exp = 0;
+    character->hp = MAX_HP[class][1];
+    character->mp = MAX_MP[class][1];
     character->pos_x = (unsigned short) GET_RANDOM_NUMBER_BETWEEN(BORN_AREA_X_MIN, BORN_AREA_X_MAX);
     character->pos_y = (unsigned short) GET_RANDOM_NUMBER_BETWEEN(BORN_AREA_Y_MIN, BORN_AREA_Y_MAX);
     return character;

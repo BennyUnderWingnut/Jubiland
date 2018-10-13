@@ -15,19 +15,48 @@ PROTOBUF_C__BEGIN_DECLS
 #endif
 
 
-typedef struct _WelcomeMessage WelcomeMessage;
 typedef struct _Response Response;
+typedef struct _WelcomeMessage WelcomeMessage;
+typedef struct _WorldStateMessage WorldStateMessage;
+typedef struct _RefuseLoginMessage RefuseLoginMessage;
+typedef struct _CharacterMessage CharacterMessage;
 
 
 /* --- enums --- */
 
 typedef enum _Response__RequestType {
   RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE = 0,
-  RESPONSE__REQUEST_TYPE__LOGIN_FAIL = 1
+  RESPONSE__REQUEST_TYPE__REFUSE_LOGIN = 1,
+  RESPONSE__REQUEST_TYPE__WORLD_STATE = 2
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(RESPONSE__REQUEST_TYPE)
 } Response__RequestType;
+typedef enum _RefuseLoginMessage__RefuseType {
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN = 1,
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__WRONG_CLASS = 2,
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__UNKNOWN = 3
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(REFUSE_LOGIN_MESSAGE__REFUSE_TYPE)
+} RefuseLoginMessage__RefuseType;
+typedef enum _CharacterMessage__CharacterClass {
+  CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR = 0,
+  CHARACTER_MESSAGE__CHARACTER_CLASS__MAGE = 2,
+  CHARACTER_MESSAGE__CHARACTER_CLASS__PRIEST = 3
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CHARACTER_MESSAGE__CHARACTER_CLASS)
+} CharacterMessage__CharacterClass;
 
 /* --- messages --- */
+
+struct  _Response
+{
+  ProtobufCMessage base;
+  Response__RequestType type;
+  WelcomeMessage *welcomemsg;
+  RefuseLoginMessage *refuselogin;
+  WorldStateMessage *worldstate;
+};
+#define RESPONSE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&response__descriptor) \
+    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL, NULL, NULL }
+
 
 struct  _WelcomeMessage
 {
@@ -40,36 +69,45 @@ struct  _WelcomeMessage
     , 0, 0 }
 
 
-struct  _Response
+struct  _WorldStateMessage
 {
   ProtobufCMessage base;
-  Response__RequestType type;
-  WelcomeMessage *welcomemsg;
+  size_t n_charters;
+  CharacterMessage **charters;
 };
-#define RESPONSE__INIT \
- { PROTOBUF_C_MESSAGE_INIT (&response__descriptor) \
-    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL }
+#define WORLD_STATE_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&world_state_message__descriptor) \
+    , 0,NULL }
 
 
-/* WelcomeMessage methods */
-void   welcome_message__init
-                     (WelcomeMessage         *message);
-size_t welcome_message__get_packed_size
-                     (const WelcomeMessage   *message);
-size_t welcome_message__pack
-                     (const WelcomeMessage   *message,
-                      uint8_t             *out);
-size_t welcome_message__pack_to_buffer
-                     (const WelcomeMessage   *message,
-                      ProtobufCBuffer     *buffer);
-WelcomeMessage *
-       welcome_message__unpack
-                     (ProtobufCAllocator  *allocator,
-                      size_t               len,
-                      const uint8_t       *data);
-void   welcome_message__free_unpacked
-                     (WelcomeMessage *message,
-                      ProtobufCAllocator *allocator);
+struct  _RefuseLoginMessage
+{
+  ProtobufCMessage base;
+  RefuseLoginMessage__RefuseType type;
+};
+#define REFUSE_LOGIN_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&refuse_login_message__descriptor) \
+    , REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN }
+
+
+struct  _CharacterMessage
+{
+  ProtobufCMessage base;
+  uint64_t id;
+  char *nickname;
+  CharacterMessage__CharacterClass class_;
+  uint32_t level;
+  uint32_t exp;
+  uint32_t pos_y;
+  uint32_t pos_x;
+  uint32_t hp;
+  uint32_t mp;
+};
+#define CHARACTER_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \
+    , 0, NULL, CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
+
+
 /* Response methods */
 void   response__init
                      (Response         *message);
@@ -89,13 +127,98 @@ Response *
 void   response__free_unpacked
                      (Response *message,
                       ProtobufCAllocator *allocator);
+/* WelcomeMessage methods */
+void   welcome_message__init
+                     (WelcomeMessage         *message);
+size_t welcome_message__get_packed_size
+                     (const WelcomeMessage   *message);
+size_t welcome_message__pack
+                     (const WelcomeMessage   *message,
+                      uint8_t             *out);
+size_t welcome_message__pack_to_buffer
+                     (const WelcomeMessage   *message,
+                      ProtobufCBuffer     *buffer);
+WelcomeMessage *
+       welcome_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   welcome_message__free_unpacked
+                     (WelcomeMessage *message,
+                      ProtobufCAllocator *allocator);
+/* WorldStateMessage methods */
+void   world_state_message__init
+                     (WorldStateMessage         *message);
+size_t world_state_message__get_packed_size
+                     (const WorldStateMessage   *message);
+size_t world_state_message__pack
+                     (const WorldStateMessage   *message,
+                      uint8_t             *out);
+size_t world_state_message__pack_to_buffer
+                     (const WorldStateMessage   *message,
+                      ProtobufCBuffer     *buffer);
+WorldStateMessage *
+       world_state_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   world_state_message__free_unpacked
+                     (WorldStateMessage *message,
+                      ProtobufCAllocator *allocator);
+/* RefuseLoginMessage methods */
+void   refuse_login_message__init
+                     (RefuseLoginMessage         *message);
+size_t refuse_login_message__get_packed_size
+                     (const RefuseLoginMessage   *message);
+size_t refuse_login_message__pack
+                     (const RefuseLoginMessage   *message,
+                      uint8_t             *out);
+size_t refuse_login_message__pack_to_buffer
+                     (const RefuseLoginMessage   *message,
+                      ProtobufCBuffer     *buffer);
+RefuseLoginMessage *
+       refuse_login_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   refuse_login_message__free_unpacked
+                     (RefuseLoginMessage *message,
+                      ProtobufCAllocator *allocator);
+/* CharacterMessage methods */
+void   character_message__init
+                     (CharacterMessage         *message);
+size_t character_message__get_packed_size
+                     (const CharacterMessage   *message);
+size_t character_message__pack
+                     (const CharacterMessage   *message,
+                      uint8_t             *out);
+size_t character_message__pack_to_buffer
+                     (const CharacterMessage   *message,
+                      ProtobufCBuffer     *buffer);
+CharacterMessage *
+       character_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   character_message__free_unpacked
+                     (CharacterMessage *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
+typedef void (*Response_Closure)
+                 (const Response *message,
+                  void *closure_data);
 typedef void (*WelcomeMessage_Closure)
                  (const WelcomeMessage *message,
                   void *closure_data);
-typedef void (*Response_Closure)
-                 (const Response *message,
+typedef void (*WorldStateMessage_Closure)
+                 (const WorldStateMessage *message,
+                  void *closure_data);
+typedef void (*RefuseLoginMessage_Closure)
+                 (const RefuseLoginMessage *message,
+                  void *closure_data);
+typedef void (*CharacterMessage_Closure)
+                 (const CharacterMessage *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -103,9 +226,14 @@ typedef void (*Response_Closure)
 
 /* --- descriptors --- */
 
-extern const ProtobufCMessageDescriptor welcome_message__descriptor;
 extern const ProtobufCMessageDescriptor response__descriptor;
 extern const ProtobufCEnumDescriptor    response__request_type__descriptor;
+extern const ProtobufCMessageDescriptor welcome_message__descriptor;
+extern const ProtobufCMessageDescriptor world_state_message__descriptor;
+extern const ProtobufCMessageDescriptor refuse_login_message__descriptor;
+extern const ProtobufCEnumDescriptor    refuse_login_message__refuse_type__descriptor;
+extern const ProtobufCMessageDescriptor character_message__descriptor;
+extern const ProtobufCEnumDescriptor    character_message__character_class__descriptor;
 
 PROTOBUF_C__END_DECLS
 

@@ -1,12 +1,3 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <time.h>
-#include <strings.h>
-
 #include "socklib.h"
 
 int connect_to_server(char *host, int port) {
@@ -46,7 +37,6 @@ Response *get_response(int fd) {
     size[i] = '\0';
     long msg_size = strtol(size, NULL, 10);
     long received = 0, rv;
-    printf("Message size = %ld bytes\n", msg_size);
     if (msg_size <= 0) {
         fprintf(stderr, "Illegal message length\n");
         return NULL;
@@ -60,7 +50,6 @@ Response *get_response(int fd) {
         else rv = recv(fd, buf, (size_t) (msg_size - received), 0);
         memcpy(msg + received, buf, BUFF_SIZE);
         received += rv;
-        printf("%ld bytes received.\n", received);
     }
     Response *resp = response__unpack(NULL, (size_t) msg_size, msg);
     return resp;

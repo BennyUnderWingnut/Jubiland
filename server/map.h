@@ -8,8 +8,8 @@
 #define BORN_AREA_Y_MIN 1
 #define BORN_AREA_Y_MAX 10
 
-typedef enum _Terrain {
-    EMPTY,
-} Terrain;
+typedef enum _TerrainType {
+    TERRAIN_EMPTY, TERRAIN_GRASS, TERRAIN_WATER, TERRAIN_MOUNTAIN
+} TerrainType;
 
 #endif //SERVER_MAP_H

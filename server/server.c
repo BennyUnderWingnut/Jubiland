@@ -34,6 +34,7 @@ void stop_listening() {
 }
 
 void *handle_call(void *fdptr) {
+    int rv;
     int fd = *(int *) fdptr;
     Connection *conn = connection_queue_get_connection(connectionQueue, fd);
     if (conn == NULL) {
@@ -44,20 +45,24 @@ void *handle_call(void *fdptr) {
     printf("fd is %d\n", fd);
     int *stat = (int *) malloc(sizeof(int));
     req = get_request(fd, stat);
-
     if (req == NULL) {
+        remove_character(conn);
         connection_queue_remove_connection(connectionQueue, conn);
         if (*stat != 1)
             fprintf(stderr, "Error unpacking incoming message\n");
     } else {
         time(&conn->last_request);
         if (req->type == REQUEST_TYPE__LOGIN && req->login != NULL) {
-            printf("New player logged in: %s\n", req->login->nickname);
-            if (add_character(conn, req->login->class_) == -1) {
-                send_login_fail(conn);
+            rv = add_character(connectionQueue, conn, req->login->class_, req->login->nickname);
+            if (rv) {
+                printf("Failed login, connection removed.");
+                send_login_fail(conn, rv);
                 connection_queue_remove_connection(connectionQueue, conn);
+            } else {
+                printf("New player logged in: %s\n", req->login->nickname);
+                send_welcome_message(conn, conn->key);
+                //send_world_status(connectionQueue, conn);
             }
-            send_welcome_message(conn, conn->key);
         }
         request__free_unpacked(req, NULL);
     }
@@ -69,7 +74,7 @@ void *handle_call(void *fdptr) {
 void *listen_port() {
     running = 1;
     int fd, rv, max_fd;
-    Connection *conn;
+    Connection *conn, *next;
     fd_set set;
     struct timeval timeout;
     timeout.tv_sec = TIMEOUT_SEC;
@@ -102,6 +107,7 @@ void *listen_port() {
                 printf("Connection established\n");
             }
             while (conn != NULL) {
+                next = conn->next;
                 if (FD_ISSET(conn->fd, &set)) {
                     conn->listened = 1;
                     handle_call(&conn->fd);
@@ -109,7 +115,7 @@ void *listen_port() {
                     //thread_pool_add_job(threadPool, handle_call, &conn->fd);
                     //thpool_add_work(thpool, (void *) handle_call, &conn->fd);
                 }
-                conn = conn->next;
+                conn = next;
             }
         }
     }

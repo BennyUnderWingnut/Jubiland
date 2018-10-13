@@ -24,6 +24,6 @@ const unsigned short EXP_TO_UPGRADE[61];
 const unsigned short MAX_HP[3][61];
 const unsigned short MAX_MP[3][61];
 
-Character *init_character(int class);
+Character *init_character(int class, char *nickname);
 
 #endif //SERVER_CHARACTER_H

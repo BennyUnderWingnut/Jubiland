@@ -21,14 +21,17 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     conn->prev = queue->head;
     time(&conn->last_request);
     conn->character = NULL;
+    pthread_mutex_lock(&queue->queue_lock);
     if (queue->head->next != NULL)
         queue->head->next->prev = conn;
     queue->head->next = conn;
     queue->connection_num++;
+    pthread_mutex_unlock(&queue->queue_lock);
     return 0;
 }
 
 int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn) {
+    pthread_mutex_lock(&queue->queue_lock);
     conn->prev->next = conn->next;
     if (conn->next != NULL) {
         conn->next->prev = conn->prev;
@@ -36,6 +39,7 @@ int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn)
     close(conn->fd);
     free(conn);
     queue->connection_num--;
+    pthread_mutex_unlock(&queue->queue_lock);
     return 1;
 }
 
@@ -59,9 +63,12 @@ int send_welcome_message(Connection *conn, int key) {
     return 0;
 }
 
-int send_login_fail(Connection *conn) {
+int send_login_fail(Connection *conn, RefuseLoginMessage__RefuseType type) {
     Response resp = RESPONSE__INIT;
-    resp.type = RESPONSE__REQUEST_TYPE__LOGIN_FAIL;
+    RefuseLoginMessage rl = REFUSE_LOGIN_MESSAGE__INIT;
+    resp.type = RESPONSE__REQUEST_TYPE__REFUSE_LOGIN;
+    resp.refuselogin = &rl;
+    rl.type = type;
     send_response(conn->fd, resp);
     return 0;
 }

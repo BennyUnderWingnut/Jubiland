@@ -187,55 +187,55 @@ void   refuse_login_message__free_unpacked
   assert(message->base.descriptor == &refuse_login_message__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-void   character_status__init
-                     (CharacterStatus         *message)
+void   character_message__init
+                     (CharacterMessage         *message)
 {
-  static const CharacterStatus init_value = CHARACTER_STATUS__INIT;
+  static const CharacterMessage init_value = CHARACTER_MESSAGE__INIT;
   *message = init_value;
 }
-size_t character_status__get_packed_size
-                     (const CharacterStatus *message)
+size_t character_message__get_packed_size
+                     (const CharacterMessage *message)
 {
-  assert(message->base.descriptor == &character_status__descriptor);
+  assert(message->base.descriptor == &character_message__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
-size_t character_status__pack
-                     (const CharacterStatus *message,
+size_t character_message__pack
+                     (const CharacterMessage *message,
                       uint8_t       *out)
 {
-  assert(message->base.descriptor == &character_status__descriptor);
+  assert(message->base.descriptor == &character_message__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
-size_t character_status__pack_to_buffer
-                     (const CharacterStatus *message,
+size_t character_message__pack_to_buffer
+                     (const CharacterMessage *message,
                       ProtobufCBuffer *buffer)
 {
-  assert(message->base.descriptor == &character_status__descriptor);
+  assert(message->base.descriptor == &character_message__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-CharacterStatus *
-       character_status__unpack
+CharacterMessage *
+       character_message__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (CharacterStatus *)
-     protobuf_c_message_unpack (&character_status__descriptor,
+  return (CharacterMessage *)
+     protobuf_c_message_unpack (&character_message__descriptor,
                                 allocator, len, data);
 }
-void   character_status__free_unpacked
-                     (CharacterStatus *message,
+void   character_message__free_unpacked
+                     (CharacterMessage *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
     return;
-  assert(message->base.descriptor == &character_status__descriptor);
+  assert(message->base.descriptor == &character_message__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 static const ProtobufCEnumValue response__request_type__enum_values_by_number[3] =
 {
   { "WELCOME_MESSAGE", "RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE", 0 },
-  { "LOGIN_FAIL", "RESPONSE__REQUEST_TYPE__LOGIN_FAIL", 1 },
+  { "REFUSE_LOGIN", "RESPONSE__REQUEST_TYPE__REFUSE_LOGIN", 1 },
   { "WORLD_STATE", "RESPONSE__REQUEST_TYPE__WORLD_STATE", 2 },
 };
 static const ProtobufCIntRange response__request_type__value_ranges[] = {
@@ -243,7 +243,7 @@ static const ProtobufCIntRange response__request_type__value_ranges[] = {
 };
 static const ProtobufCEnumValueIndex response__request_type__enum_values_by_name[3] =
 {
-  { "LOGIN_FAIL", 1 },
+  { "REFUSE_LOGIN", 1 },
   { "WELCOME_MESSAGE", 0 },
   { "WORLD_STATE", 2 },
 };
@@ -262,7 +262,7 @@ const ProtobufCEnumDescriptor response__request_type__descriptor =
   response__request_type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor response__field_descriptors[2] =
+static const ProtobufCFieldDescriptor response__field_descriptors[4] =
 {
   {
     "type",
@@ -288,15 +288,41 @@ static const ProtobufCFieldDescriptor response__field_descriptors[2] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "refuseLogin",
+    3,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Response, refuselogin),
+    &refuse_login_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "worldState",
+    4,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Response, worldstate),
+    &world_state_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned response__field_indices_by_name[] = {
+  2,   /* field[2] = refuseLogin */
   0,   /* field[0] = type */
   1,   /* field[1] = welcomeMsg */
+  3,   /* field[3] = worldState */
 };
 static const ProtobufCIntRange response__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 2 }
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor response__descriptor =
 {
@@ -306,7 +332,7 @@ const ProtobufCMessageDescriptor response__descriptor =
   "Response",
   "",
   sizeof(Response),
-  2,
+  4,
   response__field_descriptors,
   response__field_indices_by_name,
   1,  response__number_ranges,
@@ -373,7 +399,7 @@ static const ProtobufCFieldDescriptor world_state_message__field_descriptors[1] 
     PROTOBUF_C_TYPE_MESSAGE,
     offsetof(WorldStateMessage, n_charters),
     offsetof(WorldStateMessage, charters),
-    &character_status__descriptor,
+    &character_message__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -402,16 +428,20 @@ const ProtobufCMessageDescriptor world_state_message__descriptor =
   (ProtobufCMessageInit) world_state_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCEnumValue refuse_login_message__refuse_type__enum_values_by_number[1] =
+static const ProtobufCEnumValue refuse_login_message__refuse_type__enum_values_by_number[3] =
 {
   { "NICKNAME_TAKEN", "REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN", 1 },
+  { "WRONG_CLASS", "REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__WRONG_CLASS", 2 },
+  { "UNKNOWN", "REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__UNKNOWN", 3 },
 };
 static const ProtobufCIntRange refuse_login_message__refuse_type__value_ranges[] = {
-{1, 0},{0, 1}
+{1, 0},{0, 3}
 };
-static const ProtobufCEnumValueIndex refuse_login_message__refuse_type__enum_values_by_name[1] =
+static const ProtobufCEnumValueIndex refuse_login_message__refuse_type__enum_values_by_name[3] =
 {
   { "NICKNAME_TAKEN", 0 },
+  { "UNKNOWN", 2 },
+  { "WRONG_CLASS", 1 },
 };
 const ProtobufCEnumDescriptor refuse_login_message__refuse_type__descriptor =
 {
@@ -420,9 +450,9 @@ const ProtobufCEnumDescriptor refuse_login_message__refuse_type__descriptor =
   "RefuseType",
   "RefuseLoginMessage__RefuseType",
   "",
-  1,
+  3,
   refuse_login_message__refuse_type__enum_values_by_number,
-  1,
+  3,
   refuse_login_message__refuse_type__enum_values_by_name,
   1,
   refuse_login_message__refuse_type__value_ranges,
@@ -466,37 +496,37 @@ const ProtobufCMessageDescriptor refuse_login_message__descriptor =
   (ProtobufCMessageInit) refuse_login_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCEnumValue character_status__character_class__enum_values_by_number[3] =
+static const ProtobufCEnumValue character_message__character_class__enum_values_by_number[3] =
 {
-  { "WARRIOR", "CHARACTER_STATUS__CHARACTER_CLASS__WARRIOR", 0 },
-  { "MAGE", "CHARACTER_STATUS__CHARACTER_CLASS__MAGE", 2 },
-  { "PRIEST", "CHARACTER_STATUS__CHARACTER_CLASS__PRIEST", 3 },
+  { "WARRIOR", "CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR", 0 },
+  { "MAGE", "CHARACTER_MESSAGE__CHARACTER_CLASS__MAGE", 2 },
+  { "PRIEST", "CHARACTER_MESSAGE__CHARACTER_CLASS__PRIEST", 3 },
 };
-static const ProtobufCIntRange character_status__character_class__value_ranges[] = {
+static const ProtobufCIntRange character_message__character_class__value_ranges[] = {
 {0, 0},{2, 1},{0, 3}
 };
-static const ProtobufCEnumValueIndex character_status__character_class__enum_values_by_name[3] =
+static const ProtobufCEnumValueIndex character_message__character_class__enum_values_by_name[3] =
 {
   { "MAGE", 1 },
   { "PRIEST", 2 },
   { "WARRIOR", 0 },
 };
-const ProtobufCEnumDescriptor character_status__character_class__descriptor =
+const ProtobufCEnumDescriptor character_message__character_class__descriptor =
 {
   PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
-  "CharacterStatus.CharacterClass",
+  "CharacterMessage.CharacterClass",
   "CharacterClass",
-  "CharacterStatus__CharacterClass",
+  "CharacterMessage__CharacterClass",
   "",
   3,
-  character_status__character_class__enum_values_by_number,
+  character_message__character_class__enum_values_by_number,
   3,
-  character_status__character_class__enum_values_by_name,
+  character_message__character_class__enum_values_by_name,
   2,
-  character_status__character_class__value_ranges,
+  character_message__character_class__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
+static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
 {
   {
     "id",
@@ -504,7 +534,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT64,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, id),
+    offsetof(CharacterMessage, id),
     NULL,
     NULL,
     0,             /* flags */
@@ -516,7 +546,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, nickname),
+    offsetof(CharacterMessage, nickname),
     NULL,
     NULL,
     0,             /* flags */
@@ -528,8 +558,8 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_ENUM,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, class_),
-    &character_status__character_class__descriptor,
+    offsetof(CharacterMessage, class_),
+    &character_message__character_class__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -540,7 +570,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, level),
+    offsetof(CharacterMessage, level),
     NULL,
     NULL,
     0,             /* flags */
@@ -552,7 +582,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, exp),
+    offsetof(CharacterMessage, exp),
     NULL,
     NULL,
     0,             /* flags */
@@ -564,7 +594,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, pos_y),
+    offsetof(CharacterMessage, pos_y),
     NULL,
     NULL,
     0,             /* flags */
@@ -576,7 +606,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, pos_x),
+    offsetof(CharacterMessage, pos_x),
     NULL,
     NULL,
     0,             /* flags */
@@ -588,7 +618,7 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, hp),
+    offsetof(CharacterMessage, hp),
     NULL,
     NULL,
     0,             /* flags */
@@ -600,14 +630,14 @@ static const ProtobufCFieldDescriptor character_status__field_descriptors[9] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(CharacterStatus, mp),
+    offsetof(CharacterMessage, mp),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned character_status__field_indices_by_name[] = {
+static const unsigned character_message__field_indices_by_name[] = {
   2,   /* field[2] = class */
   4,   /* field[4] = exp */
   7,   /* field[7] = hp */
@@ -618,23 +648,23 @@ static const unsigned character_status__field_indices_by_name[] = {
   6,   /* field[6] = pos_x */
   5,   /* field[5] = pos_y */
 };
-static const ProtobufCIntRange character_status__number_ranges[1 + 1] =
+static const ProtobufCIntRange character_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
   { 0, 9 }
 };
-const ProtobufCMessageDescriptor character_status__descriptor =
+const ProtobufCMessageDescriptor character_message__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "CharacterStatus",
-  "CharacterStatus",
-  "CharacterStatus",
+  "CharacterMessage",
+  "CharacterMessage",
+  "CharacterMessage",
   "",
-  sizeof(CharacterStatus),
+  sizeof(CharacterMessage),
   9,
-  character_status__field_descriptors,
-  character_status__field_indices_by_name,
-  1,  character_status__number_ranges,
-  (ProtobufCMessageInit) character_status__init,
+  character_message__field_descriptors,
+  character_message__field_indices_by_name,
+  1,  character_message__number_ranges,
+  (ProtobufCMessageInit) character_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };

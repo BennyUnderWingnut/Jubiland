@@ -16,6 +16,9 @@
 #define MSG_CANNOT_CONNECT "🤷 Cannot connect to server"
 #define MSG_NICKNAME_LIMIT "🤷 Nickname must be number or english character."
 #define MSG_WAITING_RESPONSE "⌛ Waiting for response..."
+#define MSG_NICKNAME_TAKEN "🤷 Nickname has been taken by another player."
+#define MSG_UNKNOWN_ERROR "🤷 Unknown error."
+#define MSG_LOGIN_SUCCESS "⏳ Loading..."
 
 void login();
 

@@ -20,4 +20,6 @@ void init_curses(void);
 
 void main_loop(void);
 
+void init_world(void);
+
 #endif //CLIENT_GAME_H

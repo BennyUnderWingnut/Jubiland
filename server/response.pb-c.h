@@ -19,27 +19,29 @@ typedef struct _Response Response;
 typedef struct _WelcomeMessage WelcomeMessage;
 typedef struct _WorldStateMessage WorldStateMessage;
 typedef struct _RefuseLoginMessage RefuseLoginMessage;
-typedef struct _CharacterStatus CharacterStatus;
+typedef struct _CharacterMessage CharacterMessage;
 
 
 /* --- enums --- */
 
 typedef enum _Response__RequestType {
   RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE = 0,
-  RESPONSE__REQUEST_TYPE__LOGIN_FAIL = 1,
+  RESPONSE__REQUEST_TYPE__REFUSE_LOGIN = 1,
   RESPONSE__REQUEST_TYPE__WORLD_STATE = 2
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(RESPONSE__REQUEST_TYPE)
 } Response__RequestType;
 typedef enum _RefuseLoginMessage__RefuseType {
-  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN = 1
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN = 1,
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__WRONG_CLASS = 2,
+  REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__UNKNOWN = 3
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(REFUSE_LOGIN_MESSAGE__REFUSE_TYPE)
 } RefuseLoginMessage__RefuseType;
-typedef enum _CharacterStatus__CharacterClass {
-  CHARACTER_STATUS__CHARACTER_CLASS__WARRIOR = 0,
-  CHARACTER_STATUS__CHARACTER_CLASS__MAGE = 2,
-  CHARACTER_STATUS__CHARACTER_CLASS__PRIEST = 3
-    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CHARACTER_STATUS__CHARACTER_CLASS)
-} CharacterStatus__CharacterClass;
+typedef enum _CharacterMessage__CharacterClass {
+  CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR = 0,
+  CHARACTER_MESSAGE__CHARACTER_CLASS__MAGE = 2,
+  CHARACTER_MESSAGE__CHARACTER_CLASS__PRIEST = 3
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CHARACTER_MESSAGE__CHARACTER_CLASS)
+} CharacterMessage__CharacterClass;
 
 /* --- messages --- */
 
@@ -48,10 +50,12 @@ struct  _Response
   ProtobufCMessage base;
   Response__RequestType type;
   WelcomeMessage *welcomemsg;
+  RefuseLoginMessage *refuselogin;
+  WorldStateMessage *worldstate;
 };
 #define RESPONSE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&response__descriptor) \
-    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL }
+    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL, NULL, NULL }
 
 
 struct  _WelcomeMessage
@@ -69,7 +73,7 @@ struct  _WorldStateMessage
 {
   ProtobufCMessage base;
   size_t n_charters;
-  CharacterStatus **charters;
+  CharacterMessage **charters;
 };
 #define WORLD_STATE_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&world_state_message__descriptor) \
@@ -86,12 +90,12 @@ struct  _RefuseLoginMessage
     , REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN }
 
 
-struct  _CharacterStatus
+struct  _CharacterMessage
 {
   ProtobufCMessage base;
   uint64_t id;
   char *nickname;
-  CharacterStatus__CharacterClass class_;
+  CharacterMessage__CharacterClass class_;
   uint32_t level;
   uint32_t exp;
   uint32_t pos_y;
@@ -99,9 +103,9 @@ struct  _CharacterStatus
   uint32_t hp;
   uint32_t mp;
 };
-#define CHARACTER_STATUS__INIT \
- { PROTOBUF_C_MESSAGE_INIT (&character_status__descriptor) \
-    , 0, NULL, CHARACTER_STATUS__CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
+#define CHARACTER_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \
+    , 0, NULL, CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
 
 
 /* Response methods */
@@ -180,24 +184,24 @@ RefuseLoginMessage *
 void   refuse_login_message__free_unpacked
                      (RefuseLoginMessage *message,
                       ProtobufCAllocator *allocator);
-/* CharacterStatus methods */
-void   character_status__init
-                     (CharacterStatus         *message);
-size_t character_status__get_packed_size
-                     (const CharacterStatus   *message);
-size_t character_status__pack
-                     (const CharacterStatus   *message,
+/* CharacterMessage methods */
+void   character_message__init
+                     (CharacterMessage         *message);
+size_t character_message__get_packed_size
+                     (const CharacterMessage   *message);
+size_t character_message__pack
+                     (const CharacterMessage   *message,
                       uint8_t             *out);
-size_t character_status__pack_to_buffer
-                     (const CharacterStatus   *message,
+size_t character_message__pack_to_buffer
+                     (const CharacterMessage   *message,
                       ProtobufCBuffer     *buffer);
-CharacterStatus *
-       character_status__unpack
+CharacterMessage *
+       character_message__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data);
-void   character_status__free_unpacked
-                     (CharacterStatus *message,
+void   character_message__free_unpacked
+                     (CharacterMessage *message,
                       ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
@@ -213,8 +217,8 @@ typedef void (*WorldStateMessage_Closure)
 typedef void (*RefuseLoginMessage_Closure)
                  (const RefuseLoginMessage *message,
                   void *closure_data);
-typedef void (*CharacterStatus_Closure)
-                 (const CharacterStatus *message,
+typedef void (*CharacterMessage_Closure)
+                 (const CharacterMessage *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -228,8 +232,8 @@ extern const ProtobufCMessageDescriptor welcome_message__descriptor;
 extern const ProtobufCMessageDescriptor world_state_message__descriptor;
 extern const ProtobufCMessageDescriptor refuse_login_message__descriptor;
 extern const ProtobufCEnumDescriptor    refuse_login_message__refuse_type__descriptor;
-extern const ProtobufCMessageDescriptor character_status__descriptor;
-extern const ProtobufCEnumDescriptor    character_status__character_class__descriptor;
+extern const ProtobufCMessageDescriptor character_message__descriptor;
+extern const ProtobufCEnumDescriptor    character_message__character_class__descriptor;
 
 PROTOBUF_C__END_DECLS
 

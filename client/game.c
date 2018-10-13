@@ -12,9 +12,7 @@ int main(void) {
     init_curses();
     login();
     init_map();
-
-    y = 5; // TODO
-    x = 10; // TODO
+    init_world();
     main_loop();
     endwin();
     exit(0);
@@ -54,23 +52,47 @@ int is_move_okay(int y, int x) {
 void update_graph(void) {
     int i, j, map_y, map_x;
     for (i = 0; i < LINES; i++) {
-        for (j = 0; j < COLS; j++) {
+        for (j = 0; j < COLS; j += 2) {
             map_y = y + i - (LINES - 1) / 2;
-            map_x = x + j - (COLS - 1) / 2;
+            map_x = x + j / 2 - (COLS - 1) / 4 * 2;
             if (map_y < 0 || map_y >= MAP_LINES || map_x < 0 || map_x >= MAP_COLS) {
                 attron(COLOR_PAIR(TERRAIN_EMPTY));
-                mvaddstr(i * 2, j, SHAPE_EMPTY);
+                mvaddstr(i, j * 2, SHAPE_EMPTY);
                 attroff(COLOR_PAIR(TERRAIN_EMPTY));
             } else {
                 attron(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
-                mvaddstr(i * 2, j, SHAPES[map[map_y][map_x]]);
+                mvaddstr(i * 2, j * 2, SHAPES[map[map_y][map_x]]);
                 attroff(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
             }
         }
     }
     attron(COLOR_PAIR(get_terrain_color_pair(map[y][x])));
-    mvaddstr((LINES - 1) / 2, (COLS - 1) / 2, SHAPE_PLAYER);
+    mvaddstr((LINES - 1) / 2, (COLS - 1) / 4 * 2, SHAPE_PLAYER);
     attroff(COLOR_PAIR(get_terrain_color_pair(map[y][x])));
+}
+
+void init_world() {
+    int map_y, map_x;
+    Response *resp = get_response(sock);
+    if (resp != NULL & resp->type == RESPONSE__REQUEST_TYPE__WORLD_STATE && resp->worldstate != NULL) {
+        for (int i = 0; i < resp->worldstate->n_charters; i++)
+            if (id == resp->worldstate->charters[i]->id) {
+                y = resp->worldstate->charters[i]->pos_y;
+                x = resp->worldstate->charters[i]->pos_x;
+            }
+        for (int i = 0; i < resp->worldstate->n_charters; i++) {
+            map_y = resp->worldstate->charters[i]->pos_y;
+            map_x = resp->worldstate->charters[i]->pos_x;
+            attron(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
+            int screen_y = map_y - y + (LINES - 1) / 2;
+            int screen_x = 2 * (map_x - x + (COLS - 1) / 4 * 2);
+            mvaddstr(screen_y, screen_x, SHAPE_PLAYER);
+            attroff(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
+        }
+    } else {
+        print_bottom_center("Unknown error");
+        exit_game();
+    }
 }
 
 void main_loop() {
@@ -102,14 +124,14 @@ void main_loop() {
             case 'a':
             case 'A':
                 if ((x > 0) && is_move_okay(y, x - 1)) {
-                    x = x - 1;
+                    x = x - 2;
                 }
                 break;
             case KEY_RIGHT:
             case 'd':
             case 'D':
                 if ((x < MAP_COLS - 1) && is_move_okay(y, x + 1)) {
-                    x = x + 1;
+                    x = x + 2;
                 }
                 break;
             default:;

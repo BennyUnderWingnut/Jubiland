@@ -9,7 +9,7 @@ extern char nickname[];
 
 void choose_class(void);
 
-void input_nickname(void);
+int input_nickname(void);
 
 int request_login(void);
 
@@ -17,7 +17,6 @@ int get_login_status(void);
 
 void login() {
     choose_class();
-    get_login_status();
 }
 
 void refresh_class_options(int cls) {
@@ -62,16 +61,17 @@ void choose_class() {
             case KEY_ENTER:
             case 10:
                 class = cls;
-                input_nickname();
+                if (input_nickname() == 0)
+                    return;
             default:;
         }
     } while (ch != 27);
     exit_game();
 }
 
-void input_nickname() {
+int input_nickname() {
     curs_set(1);
-    int ch, y, x;
+    int ch, y, x, rv;
     /* print the message at the center of the screen */
     refresh_nickname_input();
     do {
@@ -109,19 +109,32 @@ void input_nickname() {
                     print_bottom_center(MSG_NAME_TOO_LONG);
                     move(y, x);
                 } else {
-                    sock = connect_to_server(HOST_NAME, PORT_NUM);
-                    if (sock == -1) {
-                        getyx(default_window, y, x);
-                        print_bottom_center(MSG_CANNOT_CONNECT);
-                        move(y, x);
-                    } else {
-                        request_login();
-                        return;
-                    }
+                    for (int i = 0; i < 100; i++) { // TODO DELETE
+                        sock = connect_to_server(HOST_NAME, PORT_NUM);
+                        if (sock == -1) {
+                            getyx(default_window, y, x);
+                            print_bottom_center(MSG_CANNOT_CONNECT);
+                            move(y, x);
+                        } else {
+                            request_login();
+                            rv = get_login_status();
+                            if (rv == 0) {
+                                print_bottom_center(MSG_LOGIN_SUCCESS);
+                                //return 0;
+                            } else if (rv == REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN) {
+                                getyx(default_window, y, x);
+                                print_bottom_center(MSG_NICKNAME_TAKEN);
+                                move(y, x);
+                            } else {
+                                getyx(default_window, y, x);
+                                print_bottom_center(MSG_UNKNOWN_ERROR);
+                                move(y, x);
+                            }
+                        }
+                    } // TODO DELETE
                 }
                 break;
             case 27:
-                choose_class();
                 break;
             default:
                 if (strlen(nickname) >= 15) {
@@ -134,7 +147,7 @@ void input_nickname() {
                 }
         }
     } while (ch != 27);
-    // go back
+    return 1;
 }
 
 int request_login() {
@@ -153,7 +166,7 @@ int request_login() {
 int get_login_status() {
     // Read login response message
     Response *resp = get_response(sock);
-    if (resp->type == RESPONSE__REQUEST_TYPE__LOGIN_FAIL) return -1;
+    if (resp->type == RESPONSE__REQUEST_TYPE__REFUSE_LOGIN) return resp->refuselogin->type;
     if (resp->type == RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE) {
         id = resp->welcomemsg->id;
         key = resp->welcomemsg->key;
