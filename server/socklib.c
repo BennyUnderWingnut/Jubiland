@@ -98,7 +98,7 @@ Request *get_request(int fd, int *stat) {
 }
 
 int send_response(int fd, Response resp) {
-    void *buf; // Buffer to store serialized data
+    void *buf;
     size_t len; // Length of serialized data
     char size_buf[100];
     len = response__get_packed_size(&resp);
@@ -107,7 +107,7 @@ int send_response(int fd, Response resp) {
     sprintf(size_buf, "%ld\n", len);
     send(fd, size_buf, strlen(size_buf), 0);
     send(fd, buf, len, 0);
-    free(buf); // Free the allocated serialized buffer
+    free(buf);
     return 0;
 }
 

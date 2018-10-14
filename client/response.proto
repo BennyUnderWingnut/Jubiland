@@ -13,7 +13,7 @@ message Response {
 }
 
 message WelcomeMessage {
-    required uint64 id = 1;
+    required int32 id = 1;
     required int32 key = 2;
 }
 
@@ -36,13 +36,13 @@ message CharacterMessage {
         MAGE = 2;
         PRIEST = 3;
     }
-    required uint64 id = 1;
+    required int32 id = 1;
     required string nickname = 2;
     required CharacterClass class = 3;
-    required uint32 level = 4;
-    required uint32 exp = 5;
-    required uint32 pos_y = 6;
-    required uint32 pos_x = 7;
-    required uint32 hp = 8;
-    required uint32 mp = 9;
+    required int32 level = 4;
+    required int32 exp = 5;
+    required int32 pos_y = 6;
+    required int32 pos_x = 7;
+    required int32 hp = 8;
+    required int32 mp = 9;
 }

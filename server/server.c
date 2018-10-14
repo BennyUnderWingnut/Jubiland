@@ -34,8 +34,7 @@ void stop_listening() {
 }
 
 void *handle_call(void *fdptr) {
-    int rv;
-    int fd = *(int *) fdptr;
+    int rv, rm_conn = 0, fd = *(int *) fdptr;
     Connection *conn = connection_queue_get_connection(connectionQueue, fd);
     if (conn == NULL) {
         fprintf(stderr, "Cannot get connection\n");
@@ -43,11 +42,10 @@ void *handle_call(void *fdptr) {
     }
     Request *req;
     printf("fd is %d\n", fd);
-    int *stat = (int *) malloc(sizeof(int));
+    int *stat = malloc(sizeof(int));
     req = get_request(fd, stat);
     if (req == NULL) {
-        remove_character(conn);
-        connection_queue_remove_connection(connectionQueue, conn);
+        rm_conn = 1;
         if (*stat != 1)
             fprintf(stderr, "Error unpacking incoming message\n");
     } else {
@@ -57,16 +55,17 @@ void *handle_call(void *fdptr) {
             if (rv) {
                 printf("Failed login, connection removed.");
                 send_login_fail(conn, rv);
-                connection_queue_remove_connection(connectionQueue, conn);
+                rm_conn = 1;
             } else {
                 printf("New player logged in: %s\n", req->login->nickname);
                 send_welcome_message(conn, conn->key);
-                //send_world_status(connectionQueue, conn);
+                send_world_status(connectionQueue, conn);
             }
         }
         request__free_unpacked(req, NULL);
     }
     conn->listened = 0;
+    if (rm_conn) connection_queue_remove_connection(connectionQueue, conn);
     free(stat);
     return NULL;
 }

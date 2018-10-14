@@ -7,51 +7,6 @@
 #endif
 
 #include "request.pb-c.h"
-void   login_request__init
-                     (LoginRequest         *message)
-{
-  static const LoginRequest init_value = LOGIN_REQUEST__INIT;
-  *message = init_value;
-}
-size_t login_request__get_packed_size
-                     (const LoginRequest *message)
-{
-  assert(message->base.descriptor == &login_request__descriptor);
-  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
-}
-size_t login_request__pack
-                     (const LoginRequest *message,
-                      uint8_t       *out)
-{
-  assert(message->base.descriptor == &login_request__descriptor);
-  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
-}
-size_t login_request__pack_to_buffer
-                     (const LoginRequest *message,
-                      ProtobufCBuffer *buffer)
-{
-  assert(message->base.descriptor == &login_request__descriptor);
-  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
-}
-LoginRequest *
-       login_request__unpack
-                     (ProtobufCAllocator  *allocator,
-                      size_t               len,
-                      const uint8_t       *data)
-{
-  return (LoginRequest *)
-     protobuf_c_message_unpack (&login_request__descriptor,
-                                allocator, len, data);
-}
-void   login_request__free_unpacked
-                     (LoginRequest *message,
-                      ProtobufCAllocator *allocator)
-{
-  if(!message)
-    return;
-  assert(message->base.descriptor == &login_request__descriptor);
-  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
-}
 void   request__init
                      (Request         *message)
 {
@@ -97,6 +52,160 @@ void   request__free_unpacked
   assert(message->base.descriptor == &request__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   login_request__init
+                     (LoginRequest         *message)
+{
+  static const LoginRequest init_value = LOGIN_REQUEST__INIT;
+  *message = init_value;
+}
+size_t login_request__get_packed_size
+                     (const LoginRequest *message)
+{
+  assert(message->base.descriptor == &login_request__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t login_request__pack
+                     (const LoginRequest *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &login_request__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t login_request__pack_to_buffer
+                     (const LoginRequest *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &login_request__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+LoginRequest *
+       login_request__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (LoginRequest *)
+     protobuf_c_message_unpack (&login_request__descriptor,
+                                allocator, len, data);
+}
+void   login_request__free_unpacked
+                     (LoginRequest *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &login_request__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+void   move_request__init
+                     (MoveRequest         *message)
+{
+  static const MoveRequest init_value = MOVE_REQUEST__INIT;
+  *message = init_value;
+}
+size_t move_request__get_packed_size
+                     (const MoveRequest *message)
+{
+  assert(message->base.descriptor == &move_request__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t move_request__pack
+                     (const MoveRequest *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &move_request__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t move_request__pack_to_buffer
+                     (const MoveRequest *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &move_request__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+MoveRequest *
+       move_request__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (MoveRequest *)
+     protobuf_c_message_unpack (&move_request__descriptor,
+                                allocator, len, data);
+}
+void   move_request__free_unpacked
+                     (MoveRequest *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &move_request__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+static const ProtobufCFieldDescriptor request__field_descriptors[3] =
+{
+  {
+    "type",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(Request, type),
+    &request_type__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "login",
+    2,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Request, login),
+    &login_request__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "move",
+    3,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Request, move),
+    &move_request__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned request__field_indices_by_name[] = {
+  1,   /* field[1] = login */
+  2,   /* field[2] = move */
+  0,   /* field[0] = type */
+};
+static const ProtobufCIntRange request__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 3 }
+};
+const ProtobufCMessageDescriptor request__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "Request",
+  "Request",
+  "Request",
+  "",
+  sizeof(Request),
+  3,
+  request__field_descriptors,
+  request__field_indices_by_name,
+  1,  request__number_ranges,
+  (ProtobufCMessageInit) request__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
 static const ProtobufCFieldDescriptor login_request__field_descriptors[2] =
 {
   {
@@ -148,16 +257,16 @@ const ProtobufCMessageDescriptor login_request__descriptor =
   (ProtobufCMessageInit) login_request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor request__field_descriptors[3] =
+static const ProtobufCFieldDescriptor move_request__field_descriptors[4] =
 {
   {
-    "type",
+    "id",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_ENUM,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Request, type),
-    &request_type__descriptor,
+    offsetof(MoveRequest, id),
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -168,60 +277,75 @@ static const ProtobufCFieldDescriptor request__field_descriptors[3] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Request, key),
+    offsetof(MoveRequest, key),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "login",
+    "pos_x",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_MESSAGE,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Request, login),
-    &login_request__descriptor,
+    offsetof(MoveRequest, pos_x),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "pos_y",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(MoveRequest, pos_y),
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned request__field_indices_by_name[] = {
+static const unsigned move_request__field_indices_by_name[] = {
+  0,   /* field[0] = id */
   1,   /* field[1] = key */
-  2,   /* field[2] = login */
-  0,   /* field[0] = type */
+  2,   /* field[2] = pos_x */
+  3,   /* field[3] = pos_y */
 };
-static const ProtobufCIntRange request__number_ranges[1 + 1] =
+static const ProtobufCIntRange move_request__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 4 }
 };
-const ProtobufCMessageDescriptor request__descriptor =
+const ProtobufCMessageDescriptor move_request__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "Request",
-  "Request",
-  "Request",
+  "MoveRequest",
+  "MoveRequest",
+  "MoveRequest",
   "",
-  sizeof(Request),
-  3,
-  request__field_descriptors,
-  request__field_indices_by_name,
-  1,  request__number_ranges,
-  (ProtobufCMessageInit) request__init,
+  sizeof(MoveRequest),
+  4,
+  move_request__field_descriptors,
+  move_request__field_indices_by_name,
+  1,  move_request__number_ranges,
+  (ProtobufCMessageInit) move_request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCEnumValue request_type__enum_values_by_number[1] =
+static const ProtobufCEnumValue request_type__enum_values_by_number[2] =
 {
   { "LOGIN", "REQUEST_TYPE__LOGIN", 0 },
+  { "MOVE", "REQUEST_TYPE__MOVE", 1 },
 };
 static const ProtobufCIntRange request_type__value_ranges[] = {
-{0, 0},{0, 1}
+{0, 0},{0, 2}
 };
-static const ProtobufCEnumValueIndex request_type__enum_values_by_name[1] =
+static const ProtobufCEnumValueIndex request_type__enum_values_by_name[2] =
 {
   { "LOGIN", 0 },
+  { "MOVE", 1 },
 };
 const ProtobufCEnumDescriptor request_type__descriptor =
 {
@@ -230,9 +354,9 @@ const ProtobufCEnumDescriptor request_type__descriptor =
   "RequestType",
   "RequestType",
   "",
-  1,
+  2,
   request_type__enum_values_by_number,
-  1,
+  2,
   request_type__enum_values_by_name,
   1,
   request_type__value_ranges,

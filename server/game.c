@@ -4,6 +4,7 @@ int character_number = 0;
 pthread_mutex_t character_number_lock;
 
 int add_character(ConnectionQueue *connectionQueue, Connection *connection, int class, char *nickname) {
+    pthread_mutex_lock(&connectionQueue->queue_lock);
     Connection *conn = connectionQueue->head->next;
     while (conn != NULL) {
         if (conn->character != NULL && !strcmp(conn->character->nickname, nickname))
@@ -20,13 +21,7 @@ int add_character(ConnectionQueue *connectionQueue, Connection *connection, int 
     connection->character = character;
     character_number++;
     pthread_mutex_unlock(&character_number_lock);
-    return 0;
-}
-
-int remove_character(Connection *conn) {
-    pthread_mutex_lock(&conn->character_data_lock);
-    free(conn->character);
-    pthread_mutex_unlock(&conn->character_data_lock);
+    pthread_mutex_unlock(&connectionQueue->queue_lock);
     return 0;
 }
 

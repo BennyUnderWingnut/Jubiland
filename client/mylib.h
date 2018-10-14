@@ -1,6 +1,7 @@
 #ifndef CLIENT_MYLIB_H
 #define CLIENT_MYLIB_H
 
+#include <locale.h>
 #include <stdlib.h>
 #include <curses.h>
 #include <string.h>
@@ -14,6 +15,12 @@
 #define COLOR_PAIR__TERRAIN_GRASS 3
 #define COLOR_PAIR__TERRAIN_WATER 4
 #define COLOR_PAIR__TERRAIN_MOUNTAIN 5
+
+#define SHAPE_EMPTY     "  "
+#define SHAPE_GRASS     "  "
+#define SHAPE_WATER     "🌊"
+#define SHAPE_MOUNTAIN  "🗻"
+#define SHAPE_CHARACTER    "👦"
 
 #define get_terrain_color_pair(terrain_type) (terrain_type+2)
 

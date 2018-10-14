@@ -4,7 +4,7 @@ extern WINDOW *default_window;
 extern int sock;
 extern int key;
 extern CharacterClass class;
-extern unsigned long id;
+extern int my_id;
 extern char nickname[];
 
 void choose_class(void);
@@ -109,29 +109,27 @@ int input_nickname() {
                     print_bottom_center(MSG_NAME_TOO_LONG);
                     move(y, x);
                 } else {
-                    for (int i = 0; i < 100; i++) { // TODO DELETE
-                        sock = connect_to_server(HOST_NAME, PORT_NUM);
-                        if (sock == -1) {
+                    sock = connect_to_server(HOST_NAME, PORT_NUM);
+                    if (sock == -1) {
+                        getyx(default_window, y, x);
+                        print_bottom_center(MSG_CANNOT_CONNECT);
+                        move(y, x);
+                    } else {
+                        request_login();
+                        rv = get_login_status();
+                        if (rv == 0) {
+                            print_bottom_center(MSG_LOGIN_SUCCESS);
+                            return 0;
+                        } else if (rv == REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN) {
                             getyx(default_window, y, x);
-                            print_bottom_center(MSG_CANNOT_CONNECT);
+                            print_bottom_center(MSG_NICKNAME_TAKEN);
                             move(y, x);
                         } else {
-                            request_login();
-                            rv = get_login_status();
-                            if (rv == 0) {
-                                print_bottom_center(MSG_LOGIN_SUCCESS);
-                                //return 0;
-                            } else if (rv == REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN) {
-                                getyx(default_window, y, x);
-                                print_bottom_center(MSG_NICKNAME_TAKEN);
-                                move(y, x);
-                            } else {
-                                getyx(default_window, y, x);
-                                print_bottom_center(MSG_UNKNOWN_ERROR);
-                                move(y, x);
-                            }
+                            getyx(default_window, y, x);
+                            print_bottom_center(MSG_UNKNOWN_ERROR);
+                            move(y, x);
                         }
-                    } // TODO DELETE
+                    }
                 }
                 break;
             case 27:
@@ -168,7 +166,7 @@ int get_login_status() {
     Response *resp = get_response(sock);
     if (resp->type == RESPONSE__REQUEST_TYPE__REFUSE_LOGIN) return resp->refuselogin->type;
     if (resp->type == RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE) {
-        id = resp->welcomemsg->id;
+        my_id = resp->welcomemsg->id;
         key = resp->welcomemsg->key;
     }
     return 0;

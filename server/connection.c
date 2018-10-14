@@ -1,19 +1,22 @@
 #include "connection.h"
 
 extern int sock;
+extern int character_number;
+extern pthread_mutex_t character_number_lock;
 
 ConnectionQueue *connection_queue_init(int max_connections) {
-    ConnectionQueue *queue = (ConnectionQueue *) malloc(sizeof(ConnectionQueue));
+    ConnectionQueue *queue = malloc(sizeof(ConnectionQueue));
     queue->max_num = max_connections;
-    queue->head = (Connection *) malloc(sizeof(Connection));
+    queue->head = malloc(sizeof(Connection));
     queue->head->next = NULL;
     return queue;
 }
 
 int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
+    pthread_mutex_lock(&queue->queue_lock);
     if (queue->connection_num >= queue->max_num)
         return -1;
-    Connection *conn = (Connection *) malloc(sizeof(Connection));
+    Connection *conn = malloc(sizeof(Connection));
     conn->fd = fd;
     conn->listened = 0;
     conn->key = (int) random();
@@ -21,7 +24,6 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     conn->prev = queue->head;
     time(&conn->last_request);
     conn->character = NULL;
-    pthread_mutex_lock(&queue->queue_lock);
     if (queue->head->next != NULL)
         queue->head->next->prev = conn;
     queue->head->next = conn;
@@ -30,14 +32,29 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     return 0;
 }
 
+int remove_character(Connection *conn) {
+    pthread_mutex_lock(&conn->character_data_lock);
+    free(conn->character);
+    conn->character = NULL;
+    pthread_mutex_unlock(&conn->character_data_lock);
+    pthread_mutex_lock(&character_number_lock);
+    character_number--;
+    pthread_mutex_unlock(&character_number_lock);
+    return 0;
+}
+
 int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn) {
     pthread_mutex_lock(&queue->queue_lock);
+    if (conn->character != NULL) {
+        remove_character(conn);
+    }
     conn->prev->next = conn->next;
     if (conn->next != NULL) {
         conn->next->prev = conn->prev;
     }
     close(conn->fd);
     free(conn);
+    printf("Connection freed\n");
     queue->connection_num--;
     pthread_mutex_unlock(&queue->queue_lock);
     return 1;
@@ -59,6 +76,7 @@ int send_welcome_message(Connection *conn, int key) {
     resp.type = RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE;
     resp.welcomemsg = &wm;
     wm.key = key;
+    wm.id = conn->character->id;
     send_response(conn->fd, resp);
     return 0;
 }

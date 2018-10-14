@@ -1,7 +1,14 @@
 syntax = "proto2";
 
+message Request {
+    required RequestType type = 1;
+    optional LoginRequest login = 2;
+    optional MoveRequest move = 3;
+}
+
 enum RequestType {
     LOGIN = 0;
+    MOVE = 1;
 }
 
 enum CharacterClass {
@@ -15,8 +22,9 @@ message LoginRequest {
     required CharacterClass class = 2;
 }
 
-message Request {
-    required RequestType type = 1;
+message MoveRequest {
+    required int32 id = 1;
     required int32 key = 2;
-    optional LoginRequest login = 3;
+    required int32 pos_x = 3;
+    required int32 pos_y = 4;
 }

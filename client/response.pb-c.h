@@ -61,7 +61,7 @@ struct  _Response
 struct  _WelcomeMessage
 {
   ProtobufCMessage base;
-  uint64_t id;
+  int32_t id;
   int32_t key;
 };
 #define WELCOME_MESSAGE__INIT \
@@ -93,15 +93,15 @@ struct  _RefuseLoginMessage
 struct  _CharacterMessage
 {
   ProtobufCMessage base;
-  uint64_t id;
+  int32_t id;
   char *nickname;
   CharacterMessage__CharacterClass class_;
-  uint32_t level;
-  uint32_t exp;
-  uint32_t pos_y;
-  uint32_t pos_x;
-  uint32_t hp;
-  uint32_t mp;
+  int32_t level;
+  int32_t exp;
+  int32_t pos_y;
+  int32_t pos_x;
+  int32_t hp;
+  int32_t mp;
 };
 #define CHARACTER_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \

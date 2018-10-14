@@ -9,20 +9,20 @@
 #define CLASS_TYPES 3
 
 typedef struct character_status {
-    unsigned long id;
-    char nickname[15];
     CharacterClass class;
-    unsigned char level;
-    unsigned short exp;
-    unsigned short pos_y;
-    unsigned short pos_x;
-    unsigned hp;
-    unsigned mp;
+    char nickname[15];
+    int id;
+    int level;
+    int exp;
+    int pos_y;
+    int pos_x;
+    int hp;
+    int mp;
 } Character;
 
-const unsigned short EXP_TO_UPGRADE[61];
-const unsigned short MAX_HP[3][61];
-const unsigned short MAX_MP[3][61];
+const int EXP_TO_UPGRADE[61];
+const int MAX_HP[3][61];
+const int MAX_MP[3][61];
 
 Character *init_character(int class, char *nickname);
 

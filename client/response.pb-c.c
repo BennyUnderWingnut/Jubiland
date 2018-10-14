@@ -345,7 +345,7 @@ static const ProtobufCFieldDescriptor welcome_message__field_descriptors[2] =
     "id",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT64,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(WelcomeMessage, id),
     NULL,
@@ -532,7 +532,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "id",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT64,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, id),
     NULL,
@@ -568,7 +568,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "level",
     4,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, level),
     NULL,
@@ -580,7 +580,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "exp",
     5,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, exp),
     NULL,
@@ -592,7 +592,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "pos_y",
     6,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, pos_y),
     NULL,
@@ -604,7 +604,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "pos_x",
     7,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, pos_x),
     NULL,
@@ -616,7 +616,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "hp",
     8,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, hp),
     NULL,
@@ -628,7 +628,7 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     "mp",
     9,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(CharacterMessage, mp),
     NULL,

@@ -9,17 +9,19 @@
 
 typedef struct character_status {
     CharacterClass class;
-    unsigned char level;
-    unsigned short exp;
-    unsigned short pos_y;
-    unsigned short pos_x;
-    unsigned hp;
-    unsigned mp;
+    char nickname[15];
+    int id;
+    int level;
+    int exp;
+    int pos_y;
+    int pos_x;
+    int hp;
+    int mp;
 } Character;
 
-const unsigned short EXP_TO_UPGRADE[61];
-const unsigned short MAX_HP[3][61];
-const unsigned short MAX_MP[3][61];
+const int EXP_TO_UPGRADE[61];
+const int MAX_HP[3][61];
+const int MAX_MP[3][61];
 const char *CLASS_ICON[3];
 const char *CLASS_NAME[3];
 
