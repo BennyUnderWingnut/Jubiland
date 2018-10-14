@@ -85,14 +85,8 @@ Request *get_request(int fd, int *stat) {
         else rv = recv(fd, buf, (size_t) (msg_size - received), 0);
         memcpy(msg + received, buf, BUFF_SIZE);
         received += rv;
-        printf("%ld bytes received.\n", received);
+        printf("%ld bytes received from %d.\n", received, fd);
     }
-    printf("Message received:\n");
-    for (i = 0; i < msg_size; i++) {
-        printf("%d ", msg[i]);
-        fflush(stdout);
-    }
-    printf("\n");
     Request *req = request__unpack(NULL, (size_t) msg_size, msg);
     return req;
 }
@@ -100,7 +94,7 @@ Request *get_request(int fd, int *stat) {
 int send_response(int fd, Response resp) {
     void *buf;
     size_t len; // Length of serialized data
-    char size_buf[100];
+    char size_buf[10];
     len = response__get_packed_size(&resp);
     buf = malloc(len);
     response__pack(&resp, buf);
@@ -108,6 +102,7 @@ int send_response(int fd, Response resp) {
     send(fd, size_buf, strlen(size_buf), 0);
     send(fd, buf, len, 0);
     free(buf);
+    printf("%ld bytes sent to %d.\n", len, fd);
     return 0;
 }
 

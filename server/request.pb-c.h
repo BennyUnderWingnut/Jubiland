@@ -23,7 +23,8 @@ typedef struct _MoveRequest MoveRequest;
 /* --- enums --- */
 
 typedef enum _RequestType {
-  REQUEST_TYPE__LOGIN = 0
+  REQUEST_TYPE__LOGIN = 0,
+  REQUEST_TYPE__MOVE = 1
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(REQUEST_TYPE)
 } RequestType;
 typedef enum _CharacterClass {
@@ -40,10 +41,11 @@ struct  _Request
   ProtobufCMessage base;
   RequestType type;
   LoginRequest *login;
+  MoveRequest *move;
 };
 #define REQUEST__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&request__descriptor) \
-    , REQUEST_TYPE__LOGIN, NULL }
+    , REQUEST_TYPE__LOGIN, NULL, NULL }
 
 
 struct  _LoginRequest

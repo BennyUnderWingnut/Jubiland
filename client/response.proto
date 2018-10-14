@@ -5,11 +5,13 @@ message Response {
         WELCOME_MESSAGE = 0;
         REFUSE_LOGIN = 1;
         WORLD_STATE = 2;
+        EVENTS = 4;
     }
     required RequestType type = 1;
     optional WelcomeMessage welcomeMsg = 2;
     optional RefuseLoginMessage refuseLogin = 3;
     optional WorldStateMessage worldState = 4;
+    optional EventsMessage events = 5;
 }
 
 message WelcomeMessage {
@@ -19,6 +21,11 @@ message WelcomeMessage {
 
 message WorldStateMessage {
     repeated CharacterMessage charters = 1;
+}
+
+message EventsMessage {
+    repeated MoveEventMessage moveEvents = 1;
+    repeated NewcomerEventMessage newcomerEvents = 2;
 }
 
 message RefuseLoginMessage {
@@ -31,6 +38,29 @@ message RefuseLoginMessage {
 }
 
 message CharacterMessage {
+    enum CharacterClass {
+        WARRIOR = 0;
+        MAGE = 2;
+        PRIEST = 3;
+    }
+    required int32 id = 1;
+    required string nickname = 2;
+    required CharacterClass class = 3;
+    required int32 level = 4;
+    required int32 exp = 5;
+    required int32 pos_y = 6;
+    required int32 pos_x = 7;
+    required int32 hp = 8;
+    required int32 mp = 9;
+}
+
+message MoveEventMessage {
+    required int32 id = 1;
+    required int32 pos_y = 2;
+    required int32 pos_x = 3;
+}
+
+message NewcomerEventMessage {
     enum CharacterClass {
         WARRIOR = 0;
         MAGE = 2;

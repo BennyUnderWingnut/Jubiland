@@ -11,14 +11,16 @@ char nickname[15] = "";
 
 void init_curses(void);
 
+void bind_signals(void);
+
 int main(void) {
     init_curses();
-    login();
+    int id = login();
     init_map();
-    init_world();
+    init_world(id);
+    bind_signals();
+    create_detached_thread(listen_events, (void *) &sock);
     main_loop();
-    endwin();
-    exit(0);
 }
 
 void init_curses() {
@@ -40,4 +42,9 @@ void init_curses() {
     init_pair(COLOR_PAIR__TERRAIN_WATER, COLOR_CYAN, COLOR_BLUE);
     init_pair(COLOR_PAIR__TERRAIN_MOUNTAIN, COLOR_WHITE, COLOR_GREEN);
     clear();
+}
+
+void bind_signals() {
+    signal(SIGINT, end_game);
+    signal(SIGTERM, end_game);
 }

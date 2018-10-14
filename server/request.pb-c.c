@@ -142,7 +142,7 @@ void   move_request__free_unpacked
   assert(message->base.descriptor == &move_request__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor request__field_descriptors[2] =
+static const ProtobufCFieldDescriptor request__field_descriptors[3] =
 {
   {
     "type",
@@ -158,7 +158,7 @@ static const ProtobufCFieldDescriptor request__field_descriptors[2] =
   },
   {
     "login",
-    3,
+    2,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
@@ -168,16 +168,28 @@ static const ProtobufCFieldDescriptor request__field_descriptors[2] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "move",
+    3,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Request, move),
+    &move_request__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned request__field_indices_by_name[] = {
   1,   /* field[1] = login */
+  2,   /* field[2] = move */
   0,   /* field[0] = type */
 };
-static const ProtobufCIntRange request__number_ranges[2 + 1] =
+static const ProtobufCIntRange request__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 3, 1 },
-  { 0, 2 }
+  { 0, 3 }
 };
 const ProtobufCMessageDescriptor request__descriptor =
 {
@@ -187,10 +199,10 @@ const ProtobufCMessageDescriptor request__descriptor =
   "Request",
   "",
   sizeof(Request),
-  2,
+  3,
   request__field_descriptors,
   request__field_indices_by_name,
-  2,  request__number_ranges,
+  1,  request__number_ranges,
   (ProtobufCMessageInit) request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
@@ -322,16 +334,18 @@ const ProtobufCMessageDescriptor move_request__descriptor =
   (ProtobufCMessageInit) move_request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCEnumValue request_type__enum_values_by_number[1] =
+static const ProtobufCEnumValue request_type__enum_values_by_number[2] =
 {
   { "LOGIN", "REQUEST_TYPE__LOGIN", 0 },
+  { "MOVE", "REQUEST_TYPE__MOVE", 1 },
 };
 static const ProtobufCIntRange request_type__value_ranges[] = {
-{0, 0},{0, 1}
+{0, 0},{0, 2}
 };
-static const ProtobufCEnumValueIndex request_type__enum_values_by_name[1] =
+static const ProtobufCEnumValueIndex request_type__enum_values_by_name[2] =
 {
   { "LOGIN", 0 },
+  { "MOVE", 1 },
 };
 const ProtobufCEnumDescriptor request_type__descriptor =
 {
@@ -340,9 +354,9 @@ const ProtobufCEnumDescriptor request_type__descriptor =
   "RequestType",
   "RequestType",
   "",
-  1,
+  2,
   request_type__enum_values_by_number,
-  1,
+  2,
   request_type__enum_values_by_name,
   1,
   request_type__value_ranges,

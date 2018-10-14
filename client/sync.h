@@ -7,6 +7,8 @@
 #include "socklib.h"
 #include "locale.h"
 
-void init_world(void);
+void init_world(int id);
+
+void sync_move(void);
 
 #endif //CLIENT_SYNC_H

@@ -1,6 +1,6 @@
 #include "map.h"
 
-extern int map[MAP_LINES][MAP_COLS];
+int map[MAP_LINES][MAP_COLS] = {0};
 
 void init_map() {
     int i, j;

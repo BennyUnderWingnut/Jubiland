@@ -10,7 +10,7 @@
 
 typedef struct character_status {
     CharacterClass class;
-    char nickname[15];
+    char nickname[16];
     int id;
     int level;
     int exp;

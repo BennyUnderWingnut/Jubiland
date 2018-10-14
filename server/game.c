@@ -2,6 +2,8 @@
 
 int character_number = 0;
 pthread_mutex_t character_number_lock;
+extern MoveEventQueue *moveEventQueue;
+extern NewcomerEventQueue *newcomerEventQueue;
 
 int add_character(ConnectionQueue *connectionQueue, Connection *connection, int class, char *nickname) {
     pthread_mutex_lock(&connectionQueue->queue_lock);
@@ -22,6 +24,7 @@ int add_character(ConnectionQueue *connectionQueue, Connection *connection, int 
     character_number++;
     pthread_mutex_unlock(&character_number_lock);
     pthread_mutex_unlock(&connectionQueue->queue_lock);
+    add_newcomer_event(newcomerEventQueue, *connection->character);
     return 0;
 }
 
@@ -34,9 +37,9 @@ int send_world_status(ConnectionQueue *queue, Connection *connection) {
     resp.worldstate = &ws;
     pthread_mutex_lock(&queue->queue_lock);
     pthread_mutex_lock(&character_number_lock);
-    CharacterMessage **characterMessages = malloc(sizeof(CharacterMessage *) * character_number);
     ws.n_charters = (size_t) character_number;
     pthread_mutex_unlock(&character_number_lock);
+    CharacterMessage **characterMessages = malloc(sizeof(CharacterMessage *) * ws.n_charters);
     while (conn != NULL) {
         pthread_mutex_lock(&conn->character_data_lock);
         if (conn->character != NULL) {
@@ -63,5 +66,18 @@ int send_world_status(ConnectionQueue *queue, Connection *connection) {
         free(characterMessages[i]);
     }
     free(characterMessages);
+    return 0;
+}
+
+int move_character(Connection *connection, int y, int x) {
+    // Check is move ok
+    if (y < 0 || y > MAP_LINES - 1 || x < 0 || x > MAP_COLS - 1 || map[y][x] != TERRAIN_GRASS) return -1;
+
+    pthread_mutex_lock(&connection->character_data_lock);
+    connection->character->pos_y = y;
+    connection->character->pos_x = x;
+    pthread_mutex_unlock(&connection->character_data_lock);
+
+    add_move_event(moveEventQueue, connection->character->id, y, x);
     return 0;
 }

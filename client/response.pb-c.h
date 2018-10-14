@@ -18,8 +18,11 @@ PROTOBUF_C__BEGIN_DECLS
 typedef struct _Response Response;
 typedef struct _WelcomeMessage WelcomeMessage;
 typedef struct _WorldStateMessage WorldStateMessage;
+typedef struct _EventsMessage EventsMessage;
 typedef struct _RefuseLoginMessage RefuseLoginMessage;
 typedef struct _CharacterMessage CharacterMessage;
+typedef struct _MoveEventMessage MoveEventMessage;
+typedef struct _NewcomerEventMessage NewcomerEventMessage;
 
 
 /* --- enums --- */
@@ -27,7 +30,8 @@ typedef struct _CharacterMessage CharacterMessage;
 typedef enum _Response__RequestType {
   RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE = 0,
   RESPONSE__REQUEST_TYPE__REFUSE_LOGIN = 1,
-  RESPONSE__REQUEST_TYPE__WORLD_STATE = 2
+  RESPONSE__REQUEST_TYPE__WORLD_STATE = 2,
+  RESPONSE__REQUEST_TYPE__EVENTS = 4
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(RESPONSE__REQUEST_TYPE)
 } Response__RequestType;
 typedef enum _RefuseLoginMessage__RefuseType {
@@ -42,6 +46,12 @@ typedef enum _CharacterMessage__CharacterClass {
   CHARACTER_MESSAGE__CHARACTER_CLASS__PRIEST = 3
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CHARACTER_MESSAGE__CHARACTER_CLASS)
 } CharacterMessage__CharacterClass;
+typedef enum _NewcomerEventMessage__CharacterClass {
+  NEWCOMER_EVENT_MESSAGE__CHARACTER_CLASS__WARRIOR = 0,
+  NEWCOMER_EVENT_MESSAGE__CHARACTER_CLASS__MAGE = 2,
+  NEWCOMER_EVENT_MESSAGE__CHARACTER_CLASS__PRIEST = 3
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(NEWCOMER_EVENT_MESSAGE__CHARACTER_CLASS)
+} NewcomerEventMessage__CharacterClass;
 
 /* --- messages --- */
 
@@ -52,10 +62,11 @@ struct  _Response
   WelcomeMessage *welcomemsg;
   RefuseLoginMessage *refuselogin;
   WorldStateMessage *worldstate;
+  EventsMessage *events;
 };
 #define RESPONSE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&response__descriptor) \
-    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL, NULL, NULL }
+    , RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE, NULL, NULL, NULL, NULL }
 
 
 struct  _WelcomeMessage
@@ -78,6 +89,19 @@ struct  _WorldStateMessage
 #define WORLD_STATE_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&world_state_message__descriptor) \
     , 0,NULL }
+
+
+struct  _EventsMessage
+{
+  ProtobufCMessage base;
+  size_t n_moveevents;
+  MoveEventMessage **moveevents;
+  size_t n_newcomerevents;
+  NewcomerEventMessage **newcomerevents;
+};
+#define EVENTS_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&events_message__descriptor) \
+    , 0,NULL, 0,NULL }
 
 
 struct  _RefuseLoginMessage
@@ -106,6 +130,36 @@ struct  _CharacterMessage
 #define CHARACTER_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \
     , 0, NULL, CHARACTER_MESSAGE__CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
+
+
+struct  _MoveEventMessage
+{
+  ProtobufCMessage base;
+  int32_t id;
+  int32_t pos_y;
+  int32_t pos_x;
+};
+#define MOVE_EVENT_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&move_event_message__descriptor) \
+    , 0, 0, 0 }
+
+
+struct  _NewcomerEventMessage
+{
+  ProtobufCMessage base;
+  int32_t id;
+  char *nickname;
+  NewcomerEventMessage__CharacterClass class_;
+  int32_t level;
+  int32_t exp;
+  int32_t pos_y;
+  int32_t pos_x;
+  int32_t hp;
+  int32_t mp;
+};
+#define NEWCOMER_EVENT_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&newcomer_event_message__descriptor) \
+    , 0, NULL, NEWCOMER_EVENT_MESSAGE__CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
 
 
 /* Response methods */
@@ -165,6 +219,25 @@ WorldStateMessage *
 void   world_state_message__free_unpacked
                      (WorldStateMessage *message,
                       ProtobufCAllocator *allocator);
+/* EventsMessage methods */
+void   events_message__init
+                     (EventsMessage         *message);
+size_t events_message__get_packed_size
+                     (const EventsMessage   *message);
+size_t events_message__pack
+                     (const EventsMessage   *message,
+                      uint8_t             *out);
+size_t events_message__pack_to_buffer
+                     (const EventsMessage   *message,
+                      ProtobufCBuffer     *buffer);
+EventsMessage *
+       events_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   events_message__free_unpacked
+                     (EventsMessage *message,
+                      ProtobufCAllocator *allocator);
 /* RefuseLoginMessage methods */
 void   refuse_login_message__init
                      (RefuseLoginMessage         *message);
@@ -203,6 +276,44 @@ CharacterMessage *
 void   character_message__free_unpacked
                      (CharacterMessage *message,
                       ProtobufCAllocator *allocator);
+/* MoveEventMessage methods */
+void   move_event_message__init
+                     (MoveEventMessage         *message);
+size_t move_event_message__get_packed_size
+                     (const MoveEventMessage   *message);
+size_t move_event_message__pack
+                     (const MoveEventMessage   *message,
+                      uint8_t             *out);
+size_t move_event_message__pack_to_buffer
+                     (const MoveEventMessage   *message,
+                      ProtobufCBuffer     *buffer);
+MoveEventMessage *
+       move_event_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   move_event_message__free_unpacked
+                     (MoveEventMessage *message,
+                      ProtobufCAllocator *allocator);
+/* NewcomerEventMessage methods */
+void   newcomer_event_message__init
+                     (NewcomerEventMessage         *message);
+size_t newcomer_event_message__get_packed_size
+                     (const NewcomerEventMessage   *message);
+size_t newcomer_event_message__pack
+                     (const NewcomerEventMessage   *message,
+                      uint8_t             *out);
+size_t newcomer_event_message__pack_to_buffer
+                     (const NewcomerEventMessage   *message,
+                      ProtobufCBuffer     *buffer);
+NewcomerEventMessage *
+       newcomer_event_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   newcomer_event_message__free_unpacked
+                     (NewcomerEventMessage *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*Response_Closure)
@@ -214,11 +325,20 @@ typedef void (*WelcomeMessage_Closure)
 typedef void (*WorldStateMessage_Closure)
                  (const WorldStateMessage *message,
                   void *closure_data);
+typedef void (*EventsMessage_Closure)
+                 (const EventsMessage *message,
+                  void *closure_data);
 typedef void (*RefuseLoginMessage_Closure)
                  (const RefuseLoginMessage *message,
                   void *closure_data);
 typedef void (*CharacterMessage_Closure)
                  (const CharacterMessage *message,
+                  void *closure_data);
+typedef void (*MoveEventMessage_Closure)
+                 (const MoveEventMessage *message,
+                  void *closure_data);
+typedef void (*NewcomerEventMessage_Closure)
+                 (const NewcomerEventMessage *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -230,10 +350,14 @@ extern const ProtobufCMessageDescriptor response__descriptor;
 extern const ProtobufCEnumDescriptor    response__request_type__descriptor;
 extern const ProtobufCMessageDescriptor welcome_message__descriptor;
 extern const ProtobufCMessageDescriptor world_state_message__descriptor;
+extern const ProtobufCMessageDescriptor events_message__descriptor;
 extern const ProtobufCMessageDescriptor refuse_login_message__descriptor;
 extern const ProtobufCEnumDescriptor    refuse_login_message__refuse_type__descriptor;
 extern const ProtobufCMessageDescriptor character_message__descriptor;
 extern const ProtobufCEnumDescriptor    character_message__character_class__descriptor;
+extern const ProtobufCMessageDescriptor move_event_message__descriptor;
+extern const ProtobufCMessageDescriptor newcomer_event_message__descriptor;
+extern const ProtobufCEnumDescriptor    newcomer_event_message__character_class__descriptor;
 
 PROTOBUF_C__END_DECLS
 

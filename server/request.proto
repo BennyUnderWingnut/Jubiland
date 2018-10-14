@@ -2,11 +2,13 @@ syntax = "proto2";
 
 message Request {
     required RequestType type = 1;
-    optional LoginRequest login = 3;
+    optional LoginRequest login = 2;
+    optional MoveRequest move = 3;
 }
 
 enum RequestType {
     LOGIN = 0;
+    MOVE = 1;
 }
 
 enum CharacterClass {

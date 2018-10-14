@@ -15,7 +15,7 @@
 
 #define HOST_NAME "localhost"
 #define PORT_NUM 8888
-#define MAX_MSG_SIZE 1048576
+#define MAX_MSG_SIZE 65536
 #define BUFF_SIZE 4096
 
 int connect_to_server(char *host, int port);

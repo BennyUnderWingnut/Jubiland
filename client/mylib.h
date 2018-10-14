@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <pthread.h>
+
+#define REFRESH_USEC 500 // 刷新频率
 
 #define COLOR_PAIR__TEXT_SELECTED 1
 #define COLOR_PAIR__TERRAIN_EMPTY 2
@@ -37,5 +40,7 @@
 }
 
 void exit_game();
+
+void create_detached_thread(void *(*start_routine)(void *), void *arg);
 
 #endif //CLIENT_MYLIB_H

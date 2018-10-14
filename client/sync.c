@@ -1,33 +1,49 @@
 #include "sync.h"
 
 int key;
-extern int x, y, my_id, sock, map[1024][1024];
+extern int sock, map[1024][1024];
+extern CharacterNode *me;
+extern CharacterNode *chListHead;
 
-void init_world() {
-    int map_y, map_x;
+void init_world(int id) {
     Response *resp = get_response(sock);
     if (resp != NULL & resp->type == RESPONSE__REQUEST_TYPE__WORLD_STATE && resp->worldstate != NULL) {
-        for (int i = 0; i < resp->worldstate->n_charters; i++)
-            if (my_id == resp->worldstate->charters[i]->id) {
-                y = resp->worldstate->charters[i]->pos_y;
-                x = resp->worldstate->charters[i]->pos_x;
-            }
+        chListHead = malloc(sizeof(*chListHead));
+        chListHead->next = NULL;
         for (int i = 0; i < resp->worldstate->n_charters; i++) {
-            map_y = resp->worldstate->charters[i]->pos_y;
-            map_x = resp->worldstate->charters[i]->pos_x;
-            attron(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
-            int screen_y = map_y - y + (LINES - 1) / 2;
-            int screen_x = 2 * (map_x - x + (COLS - 1) / 4);
-            mvaddstr(screen_y, screen_x, SHAPE_CHARACTER);
-            attroff(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
+            CharacterNode *node = malloc(sizeof(*node));
+            node->next = chListHead->next;
+            node->character.id = resp->worldstate->charters[i]->id;
+            node->character.hp = resp->worldstate->charters[i]->hp;
+            node->character.mp = resp->worldstate->charters[i]->mp;
+            node->character.level = resp->worldstate->charters[i]->level;
+            node->character.exp = resp->worldstate->charters[i]->exp;
+            strcpy(node->character.nickname, resp->worldstate->charters[i]->nickname);
+            node->character.class = (CharacterClass) resp->worldstate->charters[i]->class_;
+            node->character.pos_y = resp->worldstate->charters[i]->pos_y;
+            node->character.pos_x = resp->worldstate->charters[i]->pos_x;
+            chListHead->next = node;
         }
+        for (CharacterNode *node = chListHead->next; node != NULL; node = node->next)
+            if (node->character.id == id) {
+                me = node;
+                break;
+            }
     } else {
         print_bottom_center("Unknown error");
         exit_game();
     }
+    response__free_unpacked(resp, NULL);
 }
 
-int sync_move() {
+void sync_move() {
     Request req = REQUEST__INIT;
-
+    MoveRequest mr = MOVE_REQUEST__INIT;
+    req.type = REQUEST_TYPE__MOVE;
+    req.move = &mr;
+    mr.id = me->character.id;
+    mr.key = key;
+    mr.pos_x = me->character.pos_x;
+    mr.pos_y = me->character.pos_y;
+    send_request(sock, req);
 }

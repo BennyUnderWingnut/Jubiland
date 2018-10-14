@@ -3,20 +3,18 @@
 extern WINDOW *default_window;
 extern int sock;
 extern int key;
-extern CharacterClass class;
-extern int my_id;
-extern char nickname[];
 
-void choose_class(void);
+int choose_class(char *nickname);
 
-int input_nickname(void);
+int input_nickname(CharacterClass class, char *nickname, int *id);
 
-int request_login(void);
+int request_login(CharacterClass class, char *nickname);
 
-int get_login_status(void);
+int get_login_status(int *id);
 
-void login() {
-    choose_class();
+int login() {
+    char nickname[16] = "";
+    return choose_class(nickname);
 }
 
 void refresh_class_options(int cls) {
@@ -34,7 +32,7 @@ void refresh_class_options(int cls) {
     }
 }
 
-void refresh_nickname_input() {
+void refresh_nickname_input(char *nickname) {
     char buf[100];
     sprintf(buf, "%s%s", MSG_INPUT_HINT, nickname);
     clear();
@@ -44,42 +42,41 @@ void refresh_nickname_input() {
     print_center(buf);
 }
 
-void choose_class() {
+int choose_class(char *nickname) {
     curs_set(0);
-    int ch;
-    int cls = 0;
+    int ch, id;
+    int class = 0;
     do {
-        refresh_class_options(cls);
+        refresh_class_options(class);
         ch = getch();
         switch (ch) {
             case KEY_UP:
-                cls = (cls + CLASS_TYPES - 1) % CLASS_TYPES;
+                class = (class + CLASS_TYPES - 1) % CLASS_TYPES;
                 break;
             case KEY_DOWN:
-                cls = (cls + 1) % CLASS_TYPES;
+                class = (class + 1) % CLASS_TYPES;
                 break;
             case KEY_ENTER:
             case 10:
-                class = cls;
-                if (input_nickname() == 0)
-                    return;
+                if (input_nickname(class, nickname, &id) == 0)
+                    return id;
             default:;
         }
     } while (ch != 27);
     exit_game();
 }
 
-int input_nickname() {
+int input_nickname(CharacterClass class, char *nickname, int *id) {
     curs_set(1);
     int ch, y, x, rv;
     /* print the message at the center of the screen */
-    refresh_nickname_input();
+    refresh_nickname_input(nickname);
     do {
         ch = getch();
         if (!(('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == KEY_LEFT ||
               ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_DOWN || ch == 127 || ch == KEY_BACKSPACE || ch == 10 ||
               ch == KEY_ENTER || ch == 27)) {
-            refresh_nickname_input();
+            refresh_nickname_input(nickname);
             getyx(default_window, y, x);
             print_bottom_center(MSG_NICKNAME_LIMIT);
             move(y, x);
@@ -95,7 +92,7 @@ int input_nickname() {
             case KEY_BACKSPACE:
                 if (strlen(nickname) > 0) {
                     nickname[strlen(nickname) - 1] = '\0';
-                    refresh_nickname_input();
+                    refresh_nickname_input(nickname);
                 }
                 break;
             case 10:
@@ -115,8 +112,8 @@ int input_nickname() {
                         print_bottom_center(MSG_CANNOT_CONNECT);
                         move(y, x);
                     } else {
-                        request_login();
-                        rv = get_login_status();
+                        request_login(class, nickname);
+                        rv = get_login_status(id);
                         if (rv == 0) {
                             print_bottom_center(MSG_LOGIN_SUCCESS);
                             return 0;
@@ -141,33 +138,34 @@ int input_nickname() {
                     move(y, x);
                 } else {
                     nickname[strlen(nickname)] = (char) ch;
-                    refresh_nickname_input();
+                    refresh_nickname_input(nickname);
                 }
         }
     } while (ch != 27);
     return 1;
 }
 
-int request_login() {
+int request_login(CharacterClass class, char *nickname) {
     Request req = REQUEST__INIT;
     LoginRequest lr = LOGIN_REQUEST__INIT;
     req.type = REQUEST_TYPE__LOGIN;
     req.login = &lr;
     lr.nickname = nickname;
-    lr.class_ = CHARACTER_CLASS__WARRIOR;
+    lr.class_ = class;
     send_request(sock, req);
     curs_set(0);
     print_bottom_center(MSG_WAITING_RESPONSE);
     return 0;
 }
 
-int get_login_status() {
+int get_login_status(int *id) {
     // Read login response message
     Response *resp = get_response(sock);
     if (resp->type == RESPONSE__REQUEST_TYPE__REFUSE_LOGIN) return resp->refuselogin->type;
     if (resp->type == RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE) {
-        my_id = resp->welcomemsg->id;
+        *id = resp->welcomemsg->id;
         key = resp->welcomemsg->key;
     }
+    response__free_unpacked(resp, NULL);
     return 0;
 }

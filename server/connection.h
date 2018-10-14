@@ -12,15 +12,15 @@
 #include "response.pb-c.h"
 #include "character.h"
 
-typedef struct connection {
+typedef struct _Connection {
     int fd;
     int listened; // socket is being listened
     int key; // key used to verify client
     time_t last_request;
     pthread_mutex_t character_data_lock;
     Character *character;
-    struct connection *prev;
-    struct connection *next;
+    struct _Connection *prev;
+    struct _Connection *next;
 } Connection;
 
 typedef struct connection_queue {

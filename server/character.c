@@ -22,6 +22,8 @@ int last_character_id = 1;
 pthread_mutex_t last_character_id_lock;
 
 Character *init_character(int class, char *nickname) {
+    if (strlen(nickname) > 15)
+        return NULL;
     Character *character = malloc(sizeof(Character));
     pthread_mutex_lock(&last_character_id_lock);
     character->id = last_character_id++;

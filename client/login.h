@@ -20,6 +20,6 @@
 #define MSG_UNKNOWN_ERROR "🤷 Unknown error."
 #define MSG_LOGIN_SUCCESS "⏳ Loading..."
 
-void login();
+int login(); // return id
 
 #endif //CLIENT_LOGIN_H
