@@ -64,6 +64,7 @@ int choose_class(char *nickname) {
         }
     } while (ch != 27);
     exit_game();
+    return 0;
 }
 
 int input_nickname(CharacterClass class, char *nickname, int *id) {
@@ -148,7 +149,7 @@ int input_nickname(CharacterClass class, char *nickname, int *id) {
 int request_login(CharacterClass class, char *nickname) {
     Request req = REQUEST__INIT;
     LoginRequest lr = LOGIN_REQUEST__INIT;
-    req.type = REQUEST_TYPE__LOGIN;
+    req.type = REQUEST__TYPE__LOGIN;
     req.login = &lr;
     lr.nickname = nickname;
     lr.class_ = class;
@@ -161,8 +162,8 @@ int request_login(CharacterClass class, char *nickname) {
 int get_login_status(int *id) {
     // Read login response message
     Response *resp = get_response(sock);
-    if (resp->type == RESPONSE__REQUEST_TYPE__REFUSE_LOGIN) return resp->refuselogin->type;
-    if (resp->type == RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE) {
+    if (resp->type == RESPONSE__TYPE__REFUSE_LOGIN) return resp->refuselogin->type;
+    if (resp->type == RESPONSE__TYPE__WELCOME_MESSAGE) {
         *id = resp->welcomemsg->id;
         key = resp->welcomemsg->key;
     }

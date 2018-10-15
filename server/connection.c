@@ -2,7 +2,6 @@
 
 extern int sock;
 extern int character_number;
-extern pthread_mutex_t character_number_lock;
 
 ConnectionQueue *connection_queue_init(int max_connections) {
     ConnectionQueue *queue = malloc(sizeof(ConnectionQueue));
@@ -37,9 +36,7 @@ int remove_character(Connection *conn) {
     free(conn->character);
     conn->character = NULL;
     pthread_mutex_unlock(&conn->character_data_lock);
-    pthread_mutex_lock(&character_number_lock);
     character_number--;
-    pthread_mutex_unlock(&character_number_lock);
     return 0;
 }
 
@@ -73,7 +70,7 @@ Connection *connection_queue_get_connection(ConnectionQueue *queue, int fd) {
 int send_welcome_message(Connection *conn, int key) {
     Response resp = RESPONSE__INIT;
     WelcomeMessage wm = WELCOME_MESSAGE__INIT;
-    resp.type = RESPONSE__REQUEST_TYPE__WELCOME_MESSAGE;
+    resp.type = RESPONSE__TYPE__WELCOME_MESSAGE;
     resp.welcomemsg = &wm;
     wm.key = key;
     wm.id = conn->character->id;
@@ -84,7 +81,7 @@ int send_welcome_message(Connection *conn, int key) {
 int send_login_fail(Connection *conn, RefuseLoginMessage__RefuseType type) {
     Response resp = RESPONSE__INIT;
     RefuseLoginMessage rl = REFUSE_LOGIN_MESSAGE__INIT;
-    resp.type = RESPONSE__REQUEST_TYPE__REFUSE_LOGIN;
+    resp.type = RESPONSE__TYPE__REFUSE_LOGIN;
     resp.refuselogin = &rl;
     rl.type = type;
     send_response(conn->fd, resp);

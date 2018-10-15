@@ -1,20 +1,14 @@
 syntax = "proto2";
+import "enums.proto";
 
 message Request {
-    required RequestType type = 1;
+    enum Type {
+        LOGIN = 0;
+        MOVE = 1;
+    }
+    required Type type = 1;
     optional LoginRequest login = 2;
     optional MoveRequest move = 3;
-}
-
-enum RequestType {
-    LOGIN = 0;
-    MOVE = 1;
-}
-
-enum CharacterClass {
-    WARRIOR = 0;
-    MAGE = 1;
-    PRIEST = 2;
 }
 
 message LoginRequest {

@@ -4,9 +4,10 @@
 #include "map.h"
 #include "mylib.h"
 #include "request.pb-c.h"
+#include "response.pb-c.h"
 
-#define MAX_LEVEL 60
-#define CLASS_TYPES 3
+#define CHARACTER_MAX_LEVEL 20
+#define CHARACTER_CLASS_TYPES 3
 
 typedef struct character_status {
     CharacterClass class;
@@ -18,11 +19,14 @@ typedef struct character_status {
     int pos_x;
     int hp;
     int mp;
+
+    struct timeval last_move;
+    int move_interval_buffer;
 } Character;
 
-const int EXP_TO_UPGRADE[61];
-const int MAX_HP[3][61];
-const int MAX_MP[3][61];
+const int EXP_TO_UPGRADE[CHARACTER_MAX_LEVEL + 1];
+const int PLAYER_MAX_HP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
+const int PLAYER_MAX_MP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
 
 Character *init_character(int class, char *nickname);
 

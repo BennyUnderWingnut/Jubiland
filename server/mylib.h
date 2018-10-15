@@ -16,8 +16,12 @@
 #include <time.h>
 #include <limits.h>
 #include <sys/select.h>
+#include "enums.pb-c.h"
 
 #define GET_RANDOM_NUMBER_BETWEEN(low, high) (low+(int)random()%(high-low+1))
+
+#define MOVE_INTERVAL_USEC 160000 // 移两次动之间的最小间隔
+#define MOVE_INTERVAL_MAX_BUFFER_USEC 160000
 
 int set_ticker(int n_msecs);
 

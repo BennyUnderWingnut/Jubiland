@@ -1,13 +1,13 @@
 #include "sync.h"
 
 int key;
-extern int sock, map[1024][1024];
+extern int sock, map[MAP_LINES][MAP_COLS];
 extern CharacterNode *me;
 extern CharacterNode *chListHead;
 
 void init_world(int id) {
     Response *resp = get_response(sock);
-    if (resp != NULL & resp->type == RESPONSE__REQUEST_TYPE__WORLD_STATE && resp->worldstate != NULL) {
+    if (resp != NULL & resp->type == RESPONSE__TYPE__WORLD_STATE && resp->worldstate != NULL) {
         chListHead = malloc(sizeof(*chListHead));
         chListHead->next = NULL;
         for (int i = 0; i < resp->worldstate->n_charters; i++) {
@@ -39,7 +39,7 @@ void init_world(int id) {
 void sync_move() {
     Request req = REQUEST__INIT;
     MoveRequest mr = MOVE_REQUEST__INIT;
-    req.type = REQUEST_TYPE__MOVE;
+    req.type = REQUEST__TYPE__MOVE;
     req.move = &mr;
     mr.id = me->character.id;
     mr.key = key;

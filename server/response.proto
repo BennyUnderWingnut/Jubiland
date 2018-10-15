@@ -1,13 +1,14 @@
 syntax = "proto2";
+import "enums.proto";
 
 message Response {
-    enum RequestType {
+    enum Type {
         WELCOME_MESSAGE = 0;
         REFUSE_LOGIN = 1;
         WORLD_STATE = 2;
         EVENTS = 4;
     }
-    required RequestType type = 1;
+    required Type type = 1;
     optional WelcomeMessage welcomeMsg = 2;
     optional RefuseLoginMessage refuseLogin = 3;
     optional WorldStateMessage worldState = 4;
@@ -21,11 +22,12 @@ message WelcomeMessage {
 
 message WorldStateMessage {
     repeated CharacterMessage charters = 1;
+    repeated CreatureMessage creatures = 2;
 }
 
 message EventsMessage {
     repeated MoveEventMessage moveEvents = 1;
-    repeated NewcomerEventMessage newcomerEvents = 2;
+    repeated CharacterMessage newcomerEvents = 2;
 }
 
 message RefuseLoginMessage {
@@ -38,11 +40,6 @@ message RefuseLoginMessage {
 }
 
 message CharacterMessage {
-    enum CharacterClass {
-        WARRIOR = 0;
-        MAGE = 2;
-        PRIEST = 3;
-    }
     required int32 id = 1;
     required string nickname = 2;
     required CharacterClass class = 3;
@@ -52,27 +49,21 @@ message CharacterMessage {
     required int32 pos_x = 7;
     required int32 hp = 8;
     required int32 mp = 9;
+}
+
+message CreatureMessage {
+    required int32 id = 1;
+    required CreatureCategory category = 2;
+    required int32 attack = 3;
+    required int32 level = 4;
+    required int32 pos_y = 5;
+    required int32 pos_x = 6;
+    required int32 hp = 7;
+    required int32 max_hp = 8;
 }
 
 message MoveEventMessage {
     required int32 id = 1;
     required int32 pos_y = 2;
     required int32 pos_x = 3;
-}
-
-message NewcomerEventMessage {
-    enum CharacterClass {
-        WARRIOR = 0;
-        MAGE = 2;
-        PRIEST = 3;
-    }
-    required int32 id = 1;
-    required string nickname = 2;
-    required CharacterClass class = 3;
-    required int32 level = 4;
-    required int32 exp = 5;
-    required int32 pos_y = 6;
-    required int32 pos_x = 7;
-    required int32 hp = 8;
-    required int32 mp = 9;
 }

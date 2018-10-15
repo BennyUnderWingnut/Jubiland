@@ -1,6 +1,7 @@
 #include "game.h"
 
 extern WINDOW *default_window;
+extern int sock;
 const char *SHAPES[] = {SHAPE_EMPTY, SHAPE_GRASS, SHAPE_WATER, SHAPE_MOUNTAIN};
 CharacterNode *chListHead;
 CharacterNode *me;
@@ -17,49 +18,65 @@ int is_move_okay(int y, int x) {
 
 void end_game() {
     running = 0;
+    close(sock);
     exit_game();
+}
+
+void wait_until_movable(struct timeval *last_move, struct timeval *this_move) {
+    gettimeofday(this_move, NULL);
+    int delta = (int) ((this_move->tv_sec - last_move->tv_sec) * 1000000 + this_move->tv_usec - last_move->tv_usec);
+    if (delta < MOVE_INTERVAL_USEC)
+        usleep((useconds_t) (MOVE_INTERVAL_USEC - delta));
+    *last_move = *this_move;
 }
 
 void main_loop() {
     curs_set(0);/* hide cursor */
     int ch, rv;
     fd_set set;
-    struct timeval timeout;
+    struct timeval timeout, last_move, this_move;
+    gettimeofday(&last_move, NULL);
     while (running) {
         update_graph();
         refresh();
-
         FD_ZERO(&set);
         FD_SET(0, &set);
         timeout.tv_sec = 0;
-        timeout.tv_usec = REFRESH_USEC;
+        timeout.tv_usec = REFRESH_INTERVAL_USEC;
         rv = select(1, &set, NULL, NULL, &timeout);
-        if (rv == 0) continue;
-        else if (rv == -1) end_game();
+        if (rv == 0 || rv == -1) continue;
         ch = getch();
         switch (ch) {
             case KEY_UP:
             case 'w':
             case 'W':
-                if (is_move_okay(me->character.pos_y - 1, me->character.pos_x)) me->character.pos_y--;
+                if (!is_move_okay(me->character.pos_y - 1, me->character.pos_x)) break;
+                wait_until_movable(&last_move, &this_move);
+                me->character.pos_y--;
                 sync_move();
                 break;
             case KEY_DOWN:
             case 's':
             case 'S':
-                if (is_move_okay(me->character.pos_y + 1, me->character.pos_x)) me->character.pos_y++;
+                if (!is_move_okay(me->character.pos_y + 1, me->character.pos_x)) break;
+                wait_until_movable(&last_move, &this_move);
+                me->character.pos_y++;
                 sync_move();
                 break;
             case KEY_LEFT:
             case 'a':
             case 'A':
-                if (is_move_okay(me->character.pos_y, me->character.pos_x - 1)) me->character.pos_x--;
+                if (!is_move_okay(me->character.pos_y, me->character.pos_x - 1)) break;
+                wait_until_movable(&last_move, &this_move);
+                me->character.pos_x--;
                 sync_move();
                 break;
             case KEY_RIGHT:
             case 'd':
             case 'D':
-                if (is_move_okay(me->character.pos_y, me->character.pos_x + 1)) me->character.pos_x++;
+                if (!is_move_okay(me->character.pos_y, me->character.pos_x + 1)) break;
+                wait_until_movable(&last_move, &this_move);
+                me->character.pos_x++;
                 sync_move();
                 break;
             case 27:
@@ -76,7 +93,7 @@ void update_graph(void) {
     wclear(default_window);
     int i, j, map_y, map_x;
     for (i = 0; i < LINES; i++) {
-        for (j = 0; j < COLS; j += 2) {
+        for (j = 0; j < COLS - 1; j += 2) {
             map_y = me->character.pos_y + i - (LINES - 1) / 2;
             map_x = me->character.pos_x + j / 2 - (COLS - 1) / 4;
             if (map_y < 0 || map_y >= MAP_LINES || map_x < 0 || map_x >= MAP_COLS) {
@@ -99,6 +116,9 @@ void update_graph(void) {
         mvaddstr(screen_y, screen_x, SHAPE_CHARACTER);
         attroff(COLOR_PAIR(get_terrain_color_pair(map[map_y][map_x])));
     }
+    attron(COLOR_PAIR(get_terrain_color_pair(map[(LINES - 1) / 2][(COLS - 1) / 4 * 2])));
+    mvaddstr((LINES - 1) / 2, (COLS - 1) / 4 * 2, SHAPE_ME);
+    attroff(COLOR_PAIR(get_terrain_color_pair(map[(LINES - 1) / 2][(COLS - 1) / 4 * 2])));
 }
 
 void *listen_events(void *sockptr) {
@@ -106,8 +126,8 @@ void *listen_events(void *sockptr) {
     fd_set set;
     Response *resp;
     MoveEventMessage *mem;
-    NewcomerEventMessage *nem;
-    int rv, i;
+    CharacterMessage *nem;
+    int rv, i, repeated;
     CharacterNode *ch;
     while (running) {
         FD_ZERO(&set);
@@ -116,7 +136,7 @@ void *listen_events(void *sockptr) {
         if (rv == -1) end_game();
         resp = get_response(sock);
         if (resp == NULL) end_game();
-        else if (resp->type == RESPONSE__REQUEST_TYPE__EVENTS) {
+        else if (resp->type == RESPONSE__TYPE__EVENTS) {
             if (resp->events == NULL) end_game();
             for (i = 0; i < resp->events->n_moveevents; i++) {
                 mem = resp->events->moveevents[i];
@@ -131,6 +151,13 @@ void *listen_events(void *sockptr) {
             }
             for (i = 0; i < resp->events->n_newcomerevents; i++) {
                 nem = resp->events->newcomerevents[i];
+                repeated = 0;
+                for (ch = chListHead->next; ch != NULL; ch = ch->next)
+                    if (ch->character.id == nem->id) {
+                        repeated = 1;
+                        break;
+                    }
+                if (repeated) continue;
                 CharacterNode *node = malloc(sizeof(*node));
                 node->next = chListHead->next;
                 node->character.id = nem->id;

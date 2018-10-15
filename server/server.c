@@ -53,7 +53,7 @@ void *handle_call(void *fdptr) {
     } else {
         time(&conn->last_request);
         switch (req->type) {
-            case REQUEST_TYPE__LOGIN:
+            case REQUEST__TYPE__LOGIN:
                 if (req->login == NULL) break;
                 rv = add_character(connectionQueue, conn, req->login->class_, req->login->nickname);
                 if (rv) {
@@ -66,7 +66,7 @@ void *handle_call(void *fdptr) {
                     send_world_status(connectionQueue, conn);
                 }
                 break;
-            case REQUEST_TYPE__MOVE:
+            case REQUEST__TYPE__MOVE:
                 if (req->move == NULL) break;
                 if (req->move->key != conn->key) break;
                 move_character(conn, req->move->pos_y, req->move->pos_x);
@@ -141,7 +141,7 @@ void broadcast_events() {
     Response resp = RESPONSE__INIT;
     EventsMessage em = EVENTS_MESSAGE__INIT;
     resp.events = &em;
-    resp.type = RESPONSE__REQUEST_TYPE__EVENTS;
+    resp.type = RESPONSE__TYPE__EVENTS;
 
     em.n_moveevents = (size_t) moves;
     em.n_newcomerevents = (size_t) newcomers;
@@ -158,12 +158,12 @@ void broadcast_events() {
         }
     }
     if (newcomers != 0) {
-        em.newcomerevents = malloc(sizeof(NewcomerEventMessage *) * newcomers);
+        em.newcomerevents = malloc(sizeof(CharacterMessage *) * newcomers);
         for (i = 0; i < newcomers; i++) {
-            em.newcomerevents[i] = malloc(sizeof(NewcomerEventMessage));
-            newcomer_event_message__init(em.newcomerevents[i]);
+            em.newcomerevents[i] = malloc(sizeof(CharacterMessage));
+            character_message__init(em.newcomerevents[i]);
             em.newcomerevents[i]->nickname = ne->nickname;
-            em.newcomerevents[i]->class_ = (NewcomerEventMessage__CharacterClass) ne->class;
+            em.newcomerevents[i]->class_ = ne->class;
             em.newcomerevents[i]->level = ne->level;
             em.newcomerevents[i]->pos_y = ne->pos_y;
             em.newcomerevents[i]->pos_x = ne->pos_x;
@@ -196,6 +196,7 @@ void *begin_broadcast() {
 
 void init_server(int port, int threads, int max_jobs, int max_connections) {
     init_map();
+    init_creatures();
 
     sigset_t sigset;
     sigemptyset(&sigset);

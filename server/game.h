@@ -4,6 +4,7 @@
 #include "connection.h"
 #include "event.h"
 #include "character.h"
+#include "ai.h"
 
 int add_character(ConnectionQueue *connectionQueue, Connection *connection, int class, char *nickname);
 

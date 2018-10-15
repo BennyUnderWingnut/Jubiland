@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <pthread.h>
 
-#define REFRESH_USEC 500 // 刷新频率
+#define REFRESH_INTERVAL_USEC 20000 // 刷新间隔
+#define MOVE_INTERVAL_USEC 160000 // 移动间隔
 
 #define COLOR_PAIR__TEXT_SELECTED 1
 #define COLOR_PAIR__TERRAIN_EMPTY 2
@@ -24,6 +26,7 @@
 #define SHAPE_WATER     "🌊"
 #define SHAPE_MOUNTAIN  "🗻"
 #define SHAPE_CHARACTER    "👦"
+#define SHAPE_ME "🤴"
 
 #define get_terrain_color_pair(terrain_type) (terrain_type+2)
 

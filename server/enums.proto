@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+enum CharacterClass {
+    WARRIOR = 0;
+    MAGE = 1;
+    PRIEST = 2;
+}
+
+enum CreatureCategory {
+    NORMAL = 0;
+    ELITE = 1;
+    BOSS = 2;
+}
+enum CreatureState {
+    PEACE = 0;
+    COMBAT = 1;
+    DEAD = 2;
+}

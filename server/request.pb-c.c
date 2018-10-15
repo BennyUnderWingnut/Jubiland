@@ -142,6 +142,34 @@ void   move_request__free_unpacked
   assert(message->base.descriptor == &move_request__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+static const ProtobufCEnumValue request__type__enum_values_by_number[2] =
+{
+  { "LOGIN", "REQUEST__TYPE__LOGIN", 0 },
+  { "MOVE", "REQUEST__TYPE__MOVE", 1 },
+};
+static const ProtobufCIntRange request__type__value_ranges[] = {
+{0, 0},{0, 2}
+};
+static const ProtobufCEnumValueIndex request__type__enum_values_by_name[2] =
+{
+  { "LOGIN", 0 },
+  { "MOVE", 1 },
+};
+const ProtobufCEnumDescriptor request__type__descriptor =
+{
+  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
+  "Request.Type",
+  "Type",
+  "Request__Type",
+  "",
+  2,
+  request__type__enum_values_by_number,
+  2,
+  request__type__enum_values_by_name,
+  1,
+  request__type__value_ranges,
+  NULL,NULL,NULL,NULL   /* reserved[1234] */
+};
 static const ProtobufCFieldDescriptor request__field_descriptors[3] =
 {
   {
@@ -151,7 +179,7 @@ static const ProtobufCFieldDescriptor request__field_descriptors[3] =
     PROTOBUF_C_TYPE_ENUM,
     0,   /* quantifier_offset */
     offsetof(Request, type),
-    &request_type__descriptor,
+    &request__type__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -333,62 +361,4 @@ const ProtobufCMessageDescriptor move_request__descriptor =
   1,  move_request__number_ranges,
   (ProtobufCMessageInit) move_request__init,
   NULL,NULL,NULL    /* reserved[123] */
-};
-static const ProtobufCEnumValue request_type__enum_values_by_number[2] =
-{
-  { "LOGIN", "REQUEST_TYPE__LOGIN", 0 },
-  { "MOVE", "REQUEST_TYPE__MOVE", 1 },
-};
-static const ProtobufCIntRange request_type__value_ranges[] = {
-{0, 0},{0, 2}
-};
-static const ProtobufCEnumValueIndex request_type__enum_values_by_name[2] =
-{
-  { "LOGIN", 0 },
-  { "MOVE", 1 },
-};
-const ProtobufCEnumDescriptor request_type__descriptor =
-{
-  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
-  "RequestType",
-  "RequestType",
-  "RequestType",
-  "",
-  2,
-  request_type__enum_values_by_number,
-  2,
-  request_type__enum_values_by_name,
-  1,
-  request_type__value_ranges,
-  NULL,NULL,NULL,NULL   /* reserved[1234] */
-};
-static const ProtobufCEnumValue character_class__enum_values_by_number[3] =
-{
-  { "WARRIOR", "CHARACTER_CLASS__WARRIOR", 0 },
-  { "MAGE", "CHARACTER_CLASS__MAGE", 1 },
-  { "PRIEST", "CHARACTER_CLASS__PRIEST", 2 },
-};
-static const ProtobufCIntRange character_class__value_ranges[] = {
-{0, 0},{0, 3}
-};
-static const ProtobufCEnumValueIndex character_class__enum_values_by_name[3] =
-{
-  { "MAGE", 1 },
-  { "PRIEST", 2 },
-  { "WARRIOR", 0 },
-};
-const ProtobufCEnumDescriptor character_class__descriptor =
-{
-  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
-  "CharacterClass",
-  "CharacterClass",
-  "CharacterClass",
-  "",
-  3,
-  character_class__enum_values_by_number,
-  3,
-  character_class__enum_values_by_name,
-  1,
-  character_class__value_ranges,
-  NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
