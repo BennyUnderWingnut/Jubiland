@@ -26,8 +26,10 @@ message WorldStateMessage {
 }
 
 message EventsMessage {
-    repeated MoveEventMessage moveEvents = 1;
-    repeated CharacterMessage newcomerEvents = 2;
+    repeated MoveMessage moves = 1;
+    repeated MoveMessage aimoves = 2;
+    repeated CharacterMessage newcomers = 3;
+    repeated LogoutMessage logouts = 4;
 }
 
 message RefuseLoginMessage {
@@ -49,21 +51,26 @@ message CharacterMessage {
     required int32 pos_x = 7;
     required int32 hp = 8;
     required int32 mp = 9;
+    required int32 ad = 10;
 }
 
 message CreatureMessage {
     required int32 id = 1;
     required CreatureCategory category = 2;
-    required int32 attack = 3;
-    required int32 level = 4;
-    required int32 pos_y = 5;
-    required int32 pos_x = 6;
-    required int32 hp = 7;
-    required int32 max_hp = 8;
+    required int32 level = 3;
+    required int32 pos_y = 4;
+    required int32 pos_x = 5;
+    required int32 hp = 6;
+    required int32 max_hp = 7;
+    required int32 ad = 8;
 }
 
-message MoveEventMessage {
+message MoveMessage {
     required int32 id = 1;
     required int32 pos_y = 2;
     required int32 pos_x = 3;
+}
+
+message LogoutMessage {
+    required int32 id = 1;
 }

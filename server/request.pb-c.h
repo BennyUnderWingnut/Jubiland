@@ -19,13 +19,15 @@ PROTOBUF_C__BEGIN_DECLS
 typedef struct _Request Request;
 typedef struct _LoginRequest LoginRequest;
 typedef struct _MoveRequest MoveRequest;
+typedef struct _SkillRequest SkillRequest;
 
 
 /* --- enums --- */
 
 typedef enum _Request__Type {
   REQUEST__TYPE__LOGIN = 0,
-  REQUEST__TYPE__MOVE = 1
+  REQUEST__TYPE__MOVE = 1,
+  REQUEST__TYPE__SKILL = 2
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(REQUEST__TYPE)
 } Request__Type;
 
@@ -37,10 +39,11 @@ struct  _Request
   Request__Type type;
   LoginRequest *login;
   MoveRequest *move;
+  SkillRequest *skill;
 };
 #define REQUEST__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&request__descriptor) \
-    , REQUEST__TYPE__LOGIN, NULL, NULL }
+    , REQUEST__TYPE__LOGIN, NULL, NULL, NULL }
 
 
 struct  _LoginRequest
@@ -65,6 +68,17 @@ struct  _MoveRequest
 #define MOVE_REQUEST__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&move_request__descriptor) \
     , 0, 0, 0, 0 }
+
+
+struct  _SkillRequest
+{
+  ProtobufCMessage base;
+  int32_t skill;
+  int32_t target_id;
+};
+#define SKILL_REQUEST__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&skill_request__descriptor) \
+    , 0, 0 }
 
 
 /* Request methods */
@@ -124,6 +138,25 @@ MoveRequest *
 void   move_request__free_unpacked
                      (MoveRequest *message,
                       ProtobufCAllocator *allocator);
+/* SkillRequest methods */
+void   skill_request__init
+                     (SkillRequest         *message);
+size_t skill_request__get_packed_size
+                     (const SkillRequest   *message);
+size_t skill_request__pack
+                     (const SkillRequest   *message,
+                      uint8_t             *out);
+size_t skill_request__pack_to_buffer
+                     (const SkillRequest   *message,
+                      ProtobufCBuffer     *buffer);
+SkillRequest *
+       skill_request__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   skill_request__free_unpacked
+                     (SkillRequest *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*Request_Closure)
@@ -135,6 +168,9 @@ typedef void (*LoginRequest_Closure)
 typedef void (*MoveRequest_Closure)
                  (const MoveRequest *message,
                   void *closure_data);
+typedef void (*SkillRequest_Closure)
+                 (const SkillRequest *message,
+                  void *closure_data);
 
 /* --- services --- */
 
@@ -145,6 +181,7 @@ extern const ProtobufCMessageDescriptor request__descriptor;
 extern const ProtobufCEnumDescriptor    request__type__descriptor;
 extern const ProtobufCMessageDescriptor login_request__descriptor;
 extern const ProtobufCMessageDescriptor move_request__descriptor;
+extern const ProtobufCMessageDescriptor skill_request__descriptor;
 
 PROTOBUF_C__END_DECLS
 

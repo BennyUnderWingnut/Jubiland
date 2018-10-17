@@ -322,49 +322,94 @@ void   creature_message__free_unpacked
   assert(message->base.descriptor == &creature_message__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-void   move_event_message__init
-                     (MoveEventMessage         *message)
+void   move_message__init
+                     (MoveMessage         *message)
 {
-  static const MoveEventMessage init_value = MOVE_EVENT_MESSAGE__INIT;
+  static const MoveMessage init_value = MOVE_MESSAGE__INIT;
   *message = init_value;
 }
-size_t move_event_message__get_packed_size
-                     (const MoveEventMessage *message)
+size_t move_message__get_packed_size
+                     (const MoveMessage *message)
 {
-  assert(message->base.descriptor == &move_event_message__descriptor);
+  assert(message->base.descriptor == &move_message__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
-size_t move_event_message__pack
-                     (const MoveEventMessage *message,
+size_t move_message__pack
+                     (const MoveMessage *message,
                       uint8_t       *out)
 {
-  assert(message->base.descriptor == &move_event_message__descriptor);
+  assert(message->base.descriptor == &move_message__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
-size_t move_event_message__pack_to_buffer
-                     (const MoveEventMessage *message,
+size_t move_message__pack_to_buffer
+                     (const MoveMessage *message,
                       ProtobufCBuffer *buffer)
 {
-  assert(message->base.descriptor == &move_event_message__descriptor);
+  assert(message->base.descriptor == &move_message__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-MoveEventMessage *
-       move_event_message__unpack
+MoveMessage *
+       move_message__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (MoveEventMessage *)
-     protobuf_c_message_unpack (&move_event_message__descriptor,
+  return (MoveMessage *)
+     protobuf_c_message_unpack (&move_message__descriptor,
                                 allocator, len, data);
 }
-void   move_event_message__free_unpacked
-                     (MoveEventMessage *message,
+void   move_message__free_unpacked
+                     (MoveMessage *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
     return;
-  assert(message->base.descriptor == &move_event_message__descriptor);
+  assert(message->base.descriptor == &move_message__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+void   logout_message__init
+                     (LogoutMessage         *message)
+{
+  static const LogoutMessage init_value = LOGOUT_MESSAGE__INIT;
+  *message = init_value;
+}
+size_t logout_message__get_packed_size
+                     (const LogoutMessage *message)
+{
+  assert(message->base.descriptor == &logout_message__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t logout_message__pack
+                     (const LogoutMessage *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &logout_message__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t logout_message__pack_to_buffer
+                     (const LogoutMessage *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &logout_message__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+LogoutMessage *
+       logout_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (LogoutMessage *)
+     protobuf_c_message_unpack (&logout_message__descriptor,
+                                allocator, len, data);
+}
+void   logout_message__free_unpacked
+                     (LogoutMessage *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &logout_message__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 static const ProtobufCEnumValue response__type__enum_values_by_number[4] =
@@ -591,41 +636,67 @@ const ProtobufCMessageDescriptor world_state_message__descriptor =
   (ProtobufCMessageInit) world_state_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor events_message__field_descriptors[2] =
+static const ProtobufCFieldDescriptor events_message__field_descriptors[4] =
 {
   {
-    "moveEvents",
+    "moves",
     1,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(EventsMessage, n_moveevents),
-    offsetof(EventsMessage, moveevents),
-    &move_event_message__descriptor,
+    offsetof(EventsMessage, n_moves),
+    offsetof(EventsMessage, moves),
+    &move_message__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "newcomerEvents",
+    "aimoves",
     2,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(EventsMessage, n_newcomerevents),
-    offsetof(EventsMessage, newcomerevents),
+    offsetof(EventsMessage, n_aimoves),
+    offsetof(EventsMessage, aimoves),
+    &move_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "newcomers",
+    3,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(EventsMessage, n_newcomers),
+    offsetof(EventsMessage, newcomers),
     &character_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "logouts",
+    4,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(EventsMessage, n_logouts),
+    offsetof(EventsMessage, logouts),
+    &logout_message__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
 static const unsigned events_message__field_indices_by_name[] = {
-  0,   /* field[0] = moveEvents */
-  1,   /* field[1] = newcomerEvents */
+  1,   /* field[1] = aimoves */
+  3,   /* field[3] = logouts */
+  0,   /* field[0] = moves */
+  2,   /* field[2] = newcomers */
 };
 static const ProtobufCIntRange events_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 2 }
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor events_message__descriptor =
 {
@@ -635,7 +706,7 @@ const ProtobufCMessageDescriptor events_message__descriptor =
   "EventsMessage",
   "",
   sizeof(EventsMessage),
-  2,
+  4,
   events_message__field_descriptors,
   events_message__field_indices_by_name,
   1,  events_message__number_ranges,
@@ -710,7 +781,7 @@ const ProtobufCMessageDescriptor refuse_login_message__descriptor =
   (ProtobufCMessageInit) refuse_login_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
+static const ProtobufCFieldDescriptor character_message__field_descriptors[10] =
 {
   {
     "id",
@@ -820,8 +891,21 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[9] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "ad",
+    10,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(CharacterMessage, ad),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned character_message__field_indices_by_name[] = {
+  9,   /* field[9] = ad */
   2,   /* field[2] = class */
   4,   /* field[4] = exp */
   7,   /* field[7] = hp */
@@ -835,7 +919,7 @@ static const unsigned character_message__field_indices_by_name[] = {
 static const ProtobufCIntRange character_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 9 }
+  { 0, 10 }
 };
 const ProtobufCMessageDescriptor character_message__descriptor =
 {
@@ -845,7 +929,7 @@ const ProtobufCMessageDescriptor character_message__descriptor =
   "CharacterMessage",
   "",
   sizeof(CharacterMessage),
-  9,
+  10,
   character_message__field_descriptors,
   character_message__field_indices_by_name,
   1,  character_message__number_ranges,
@@ -879,20 +963,8 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "attack",
-    3,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(CreatureMessage, attack),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "level",
-    4,
+    3,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -904,7 +976,7 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
   },
   {
     "pos_y",
-    5,
+    4,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -916,7 +988,7 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
   },
   {
     "pos_x",
-    6,
+    5,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -928,7 +1000,7 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
   },
   {
     "hp",
-    7,
+    6,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -940,7 +1012,7 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
   },
   {
     "max_hp",
-    8,
+    7,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -950,16 +1022,28 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "ad",
+    8,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(CreatureMessage, ad),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned creature_message__field_indices_by_name[] = {
-  2,   /* field[2] = attack */
+  7,   /* field[7] = ad */
   1,   /* field[1] = category */
-  6,   /* field[6] = hp */
+  5,   /* field[5] = hp */
   0,   /* field[0] = id */
-  3,   /* field[3] = level */
-  7,   /* field[7] = max_hp */
-  5,   /* field[5] = pos_x */
-  4,   /* field[4] = pos_y */
+  2,   /* field[2] = level */
+  6,   /* field[6] = max_hp */
+  4,   /* field[4] = pos_x */
+  3,   /* field[3] = pos_y */
 };
 static const ProtobufCIntRange creature_message__number_ranges[1 + 1] =
 {
@@ -981,7 +1065,7 @@ const ProtobufCMessageDescriptor creature_message__descriptor =
   (ProtobufCMessageInit) creature_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor move_event_message__field_descriptors[3] =
+static const ProtobufCFieldDescriptor move_message__field_descriptors[3] =
 {
   {
     "id",
@@ -989,7 +1073,7 @@ static const ProtobufCFieldDescriptor move_event_message__field_descriptors[3] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(MoveEventMessage, id),
+    offsetof(MoveMessage, id),
     NULL,
     NULL,
     0,             /* flags */
@@ -1001,7 +1085,7 @@ static const ProtobufCFieldDescriptor move_event_message__field_descriptors[3] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(MoveEventMessage, pos_y),
+    offsetof(MoveMessage, pos_y),
     NULL,
     NULL,
     0,             /* flags */
@@ -1013,35 +1097,73 @@ static const ProtobufCFieldDescriptor move_event_message__field_descriptors[3] =
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(MoveEventMessage, pos_x),
+    offsetof(MoveMessage, pos_x),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned move_event_message__field_indices_by_name[] = {
+static const unsigned move_message__field_indices_by_name[] = {
   0,   /* field[0] = id */
   2,   /* field[2] = pos_x */
   1,   /* field[1] = pos_y */
 };
-static const ProtobufCIntRange move_event_message__number_ranges[1 + 1] =
+static const ProtobufCIntRange move_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
   { 0, 3 }
 };
-const ProtobufCMessageDescriptor move_event_message__descriptor =
+const ProtobufCMessageDescriptor move_message__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "MoveEventMessage",
-  "MoveEventMessage",
-  "MoveEventMessage",
+  "MoveMessage",
+  "MoveMessage",
+  "MoveMessage",
   "",
-  sizeof(MoveEventMessage),
+  sizeof(MoveMessage),
   3,
-  move_event_message__field_descriptors,
-  move_event_message__field_indices_by_name,
-  1,  move_event_message__number_ranges,
-  (ProtobufCMessageInit) move_event_message__init,
+  move_message__field_descriptors,
+  move_message__field_indices_by_name,
+  1,  move_message__number_ranges,
+  (ProtobufCMessageInit) move_message__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor logout_message__field_descriptors[1] =
+{
+  {
+    "id",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(LogoutMessage, id),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned logout_message__field_indices_by_name[] = {
+  0,   /* field[0] = id */
+};
+static const ProtobufCIntRange logout_message__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 1 }
+};
+const ProtobufCMessageDescriptor logout_message__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "LogoutMessage",
+  "LogoutMessage",
+  "LogoutMessage",
+  "",
+  sizeof(LogoutMessage),
+  1,
+  logout_message__field_descriptors,
+  logout_message__field_indices_by_name,
+  1,  logout_message__number_ranges,
+  (ProtobufCMessageInit) logout_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };

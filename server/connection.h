@@ -11,6 +11,7 @@
 #include "request.pb-c.h"
 #include "response.pb-c.h"
 #include "character.h"
+#include "event.h"
 
 typedef struct _Connection {
     int fd;

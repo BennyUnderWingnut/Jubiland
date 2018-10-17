@@ -142,18 +142,65 @@ void   move_request__free_unpacked
   assert(message->base.descriptor == &move_request__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCEnumValue request__type__enum_values_by_number[2] =
+void   skill_request__init
+                     (SkillRequest         *message)
+{
+  static const SkillRequest init_value = SKILL_REQUEST__INIT;
+  *message = init_value;
+}
+size_t skill_request__get_packed_size
+                     (const SkillRequest *message)
+{
+  assert(message->base.descriptor == &skill_request__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t skill_request__pack
+                     (const SkillRequest *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &skill_request__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t skill_request__pack_to_buffer
+                     (const SkillRequest *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &skill_request__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SkillRequest *
+       skill_request__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SkillRequest *)
+     protobuf_c_message_unpack (&skill_request__descriptor,
+                                allocator, len, data);
+}
+void   skill_request__free_unpacked
+                     (SkillRequest *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &skill_request__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+static const ProtobufCEnumValue request__type__enum_values_by_number[3] =
 {
   { "LOGIN", "REQUEST__TYPE__LOGIN", 0 },
   { "MOVE", "REQUEST__TYPE__MOVE", 1 },
+  { "SKILL", "REQUEST__TYPE__SKILL", 2 },
 };
 static const ProtobufCIntRange request__type__value_ranges[] = {
-{0, 0},{0, 2}
+{0, 0},{0, 3}
 };
-static const ProtobufCEnumValueIndex request__type__enum_values_by_name[2] =
+static const ProtobufCEnumValueIndex request__type__enum_values_by_name[3] =
 {
   { "LOGIN", 0 },
   { "MOVE", 1 },
+  { "SKILL", 2 },
 };
 const ProtobufCEnumDescriptor request__type__descriptor =
 {
@@ -162,15 +209,15 @@ const ProtobufCEnumDescriptor request__type__descriptor =
   "Type",
   "Request__Type",
   "",
-  2,
+  3,
   request__type__enum_values_by_number,
-  2,
+  3,
   request__type__enum_values_by_name,
   1,
   request__type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor request__field_descriptors[3] =
+static const ProtobufCFieldDescriptor request__field_descriptors[4] =
 {
   {
     "type",
@@ -208,16 +255,29 @@ static const ProtobufCFieldDescriptor request__field_descriptors[3] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "skill",
+    4,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Request, skill),
+    &skill_request__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned request__field_indices_by_name[] = {
   1,   /* field[1] = login */
   2,   /* field[2] = move */
+  3,   /* field[3] = skill */
   0,   /* field[0] = type */
 };
 static const ProtobufCIntRange request__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor request__descriptor =
 {
@@ -227,7 +287,7 @@ const ProtobufCMessageDescriptor request__descriptor =
   "Request",
   "",
   sizeof(Request),
-  3,
+  4,
   request__field_descriptors,
   request__field_indices_by_name,
   1,  request__number_ranges,
@@ -360,5 +420,56 @@ const ProtobufCMessageDescriptor move_request__descriptor =
   move_request__field_indices_by_name,
   1,  move_request__number_ranges,
   (ProtobufCMessageInit) move_request__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor skill_request__field_descriptors[2] =
+{
+  {
+    "skill",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillRequest, skill),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "target_id",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillRequest, target_id),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned skill_request__field_indices_by_name[] = {
+  0,   /* field[0] = skill */
+  1,   /* field[1] = target_id */
+};
+static const ProtobufCIntRange skill_request__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor skill_request__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SkillRequest",
+  "SkillRequest",
+  "SkillRequest",
+  "",
+  sizeof(SkillRequest),
+  2,
+  skill_request__field_descriptors,
+  skill_request__field_indices_by_name,
+  1,  skill_request__number_ranges,
+  (ProtobufCMessageInit) skill_request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };

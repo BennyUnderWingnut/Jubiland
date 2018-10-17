@@ -11,7 +11,7 @@
 typedef struct _Creature {
     int id;
     CreatureCategory category;
-    int attack;
+    int ad;
     int level;
     int exp; // exp the player killing it gets
     int pos_y;
@@ -20,11 +20,12 @@ typedef struct _Creature {
     int born_pos_x;
     int hp;
     int max_hp;
+    CreatureState state;
 } Creature;
 
 const int CREATURE_MAX_HP[CREATURE_CATEGORIES_NUM][CREATURE_MAX_LEVEL + 1];
 
-const int CREATURE_ATTACK[CREATURE_CATEGORIES_NUM][CREATURE_MAX_LEVEL + 1];
+const int CREATURE_AD[CREATURE_CATEGORIES_NUM][CREATURE_MAX_LEVEL + 1];
 
 const int CREATURE_EXP[CREATURE_CATEGORIES_NUM][CREATURE_MAX_LEVEL + 1];
 
@@ -35,5 +36,7 @@ const int CREATURE_LEVEL[CREATURE_NUM];
 const int CREATURE_INIT_POSITION[CREATURE_NUM][2];
 
 const int CREATURE_REFRESH_INTERVAL_SEC[CREATURE_CATEGORIES_NUM];
+
+const int CREATURE_WANDER_DIR[16][2];
 
 #endif //SERVER_CREATURE_H

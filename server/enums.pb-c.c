@@ -7,6 +7,34 @@
 #endif
 
 #include "enums.pb-c.h"
+static const ProtobufCEnumValue unit_type__enum_values_by_number[2] =
+{
+  { "CHARACTER", "UNIT_TYPE__CHARACTER", 0 },
+  { "CREATURE", "UNIT_TYPE__CREATURE", 1 },
+};
+static const ProtobufCIntRange unit_type__value_ranges[] = {
+{0, 0},{0, 2}
+};
+static const ProtobufCEnumValueIndex unit_type__enum_values_by_name[2] =
+{
+  { "CHARACTER", 0 },
+  { "CREATURE", 1 },
+};
+const ProtobufCEnumDescriptor unit_type__descriptor =
+{
+  PROTOBUF_C__ENUM_DESCRIPTOR_MAGIC,
+  "UnitType",
+  "UnitType",
+  "UnitType",
+  "",
+  2,
+  unit_type__enum_values_by_number,
+  2,
+  unit_type__enum_values_by_name,
+  1,
+  unit_type__value_ranges,
+  NULL,NULL,NULL,NULL   /* reserved[1234] */
+};
 static const ProtobufCEnumValue character_class__enum_values_by_number[3] =
 {
   { "WARRIOR", "CHARACTER_CLASS__WARRIOR", 0 },
@@ -69,7 +97,7 @@ const ProtobufCEnumDescriptor creature_category__descriptor =
 };
 static const ProtobufCEnumValue creature_state__enum_values_by_number[3] =
 {
-  { "PEACE", "CREATURE_STATE__PEACE", 0 },
+  { "WANDERING", "CREATURE_STATE__WANDERING", 0 },
   { "COMBAT", "CREATURE_STATE__COMBAT", 1 },
   { "DEAD", "CREATURE_STATE__DEAD", 2 },
 };
@@ -80,7 +108,7 @@ static const ProtobufCEnumValueIndex creature_state__enum_values_by_name[3] =
 {
   { "COMBAT", 1 },
   { "DEAD", 2 },
-  { "PEACE", 0 },
+  { "WANDERING", 0 },
 };
 const ProtobufCEnumDescriptor creature_state__descriptor =
 {

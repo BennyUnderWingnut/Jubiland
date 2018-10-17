@@ -1,7 +1,8 @@
 #include "game.h"
 
 int character_number = 0;
-extern MoveEventQueue *moveEventQueue;
+extern MoveEventQueue *characterMoveEventQueue;
+extern MoveEventQueue *aiMoveEventQueue;
 extern NewcomerEventQueue *newcomerEventQueue;
 Creature creatures[CREATURE_NUM];
 pthread_mutex_t creature_data_lock[CREATURE_NUM];
@@ -10,14 +11,19 @@ int add_character(ConnectionQueue *connectionQueue, Connection *connection, int 
     pthread_mutex_lock(&connectionQueue->queue_lock);
     Connection *conn = connectionQueue->head->next;
     while (conn != NULL) {
-        if (conn->character != NULL && !strcmp(conn->character->nickname, nickname))
+        if (conn->character != NULL && !strcmp(conn->character->nickname, nickname)) {
+            pthread_mutex_unlock(&connectionQueue->queue_lock);
             return 1; // Nickname taken
+        }
         conn = conn->next;
     }
-    if (class < 0 || class >= CHARACTER_CLASS_TYPES)
+    if (class < 0 || class >= CHARACTER_CLASS_TYPES) {
+        pthread_mutex_unlock(&connectionQueue->queue_lock);
         return 2; // Wrong class
+    }
     Character *character;
     if ((character = init_character(class, nickname)) == NULL) {
+        pthread_mutex_unlock(&connectionQueue->queue_lock);
         return 3; // Unknown error
     }
     connection->character = character;
@@ -53,6 +59,7 @@ int send_world_status(ConnectionQueue *queue, Connection *connection) {
             characterMessages[i]->pos_y = conn->character->pos_y;
             characterMessages[i]->hp = conn->character->hp;
             characterMessages[i]->mp = conn->character->mp;
+            characterMessages[i]->ad = conn->character->ad;
             i++;
         }
         pthread_mutex_unlock(&conn->character_data_lock);
@@ -73,8 +80,8 @@ int send_world_status(ConnectionQueue *queue, Connection *connection) {
         creatureMessages[i]->pos_x = creatures[i].pos_x;
         creatureMessages[i]->category = creatures[i].category;
         creatureMessages[i]->id = creatures[i].id;
-        creatureMessages[i]->attack = creatures[i].attack;
         creatureMessages[i]->hp = creatures[i].hp;
+        creatureMessages[i]->ad = creatures[i].ad;
         pthread_mutex_unlock(&creature_data_lock[i]);
     }
 
@@ -112,6 +119,6 @@ int move_character(Connection *connection, int y, int x) {
     connection->character->pos_x = x;
     pthread_mutex_unlock(&connection->character_data_lock);
 
-    add_move_event(moveEventQueue, connection->character->id, y, x);
+    add_move_event(characterMoveEventQueue, connection->character->id, y, x);
     return 0;
 }

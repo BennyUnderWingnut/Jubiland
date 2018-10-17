@@ -2,19 +2,23 @@
 
 extern int sock;
 extern int character_number;
+extern LogoutEventQueue *logoutEventQueue;
 
 ConnectionQueue *connection_queue_init(int max_connections) {
     ConnectionQueue *queue = malloc(sizeof(ConnectionQueue));
     queue->max_num = max_connections;
     queue->head = malloc(sizeof(Connection));
     queue->head->next = NULL;
+    pthread_mutex_init(&queue->queue_lock, NULL);
     return queue;
 }
 
 int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     pthread_mutex_lock(&queue->queue_lock);
-    if (queue->connection_num >= queue->max_num)
+    if (queue->connection_num >= queue->max_num) {
+        pthread_mutex_unlock(&queue->queue_lock);
         return -1;
+    }
     Connection *conn = malloc(sizeof(Connection));
     conn->fd = fd;
     conn->listened = 0;
@@ -23,6 +27,7 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     conn->prev = queue->head;
     time(&conn->last_request);
     conn->character = NULL;
+    pthread_mutex_init(&conn->character_data_lock, NULL);
     if (queue->head->next != NULL)
         queue->head->next->prev = conn;
     queue->head->next = conn;
@@ -43,6 +48,7 @@ int remove_character(Connection *conn) {
 int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn) {
     pthread_mutex_lock(&queue->queue_lock);
     if (conn->character != NULL) {
+        add_logout_event(logoutEventQueue, conn->character->id);
         remove_character(conn);
     }
     conn->prev->next = conn->next;

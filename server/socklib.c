@@ -102,7 +102,6 @@ int send_response(int fd, Response resp) {
     send(fd, size_buf, strlen(size_buf), 0);
     send(fd, buf, len, 0);
     free(buf);
-    printf("%ld bytes sent to %d.\n", len, fd);
     return 0;
 }
 

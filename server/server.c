@@ -9,8 +9,11 @@ int sock, running;
 //ThreadPool *threadPool;
 threadpool thpool;
 ConnectionQueue *connectionQueue;
-MoveEventQueue *moveEventQueue;
+MoveEventQueue *characterMoveEventQueue;
+MoveEventQueue *aiMoveEventQueue;
 NewcomerEventQueue *newcomerEventQueue;
+LogoutEventQueue *logoutEventQueue;
+pthread_mutex_t ai_move_lock = PTHREAD_MUTEX_INITIALIZER;
 
 int main(int ac, char *av[]) {
     int threads = DEFAULT_NUM_THREADS;
@@ -57,7 +60,7 @@ void *handle_call(void *fdptr) {
                 if (req->login == NULL) break;
                 rv = add_character(connectionQueue, conn, req->login->class_, req->login->nickname);
                 if (rv) {
-                    printf("Failed login, _Connection removed.");
+                    printf("Failed login, Connection removed.");
                     send_login_fail(conn, rv);
                     rm_conn = 1;
                 } else {
@@ -76,7 +79,8 @@ void *handle_call(void *fdptr) {
         request__free_unpacked(req, NULL);
     }
     conn->listened = 0;
-    if (rm_conn) connection_queue_remove_connection(connectionQueue, conn);
+    if (rm_conn)
+        connection_queue_remove_connection(connectionQueue, conn);
     free(stat);
     return NULL;
 }
@@ -108,7 +112,7 @@ void *listen_port() {
         if (rv == -1) {
             perror("Failed to select: ");
         } else if (rv == 0) {
-            printf("Timeout\n");
+            // DO NOTHING
         } else {
             conn = connectionQueue->head->next;
             if (FD_ISSET(sock, &set)) {
@@ -133,53 +137,100 @@ void *listen_port() {
 }
 
 void broadcast_events() {
-    int moves, newcomers, i;
+    pthread_mutex_unlock(&ai_move_lock);
+
+    int moves, aimoves, newcomers, logouts, i;
     Connection *conn = connectionQueue->head->next;
-    MoveEvent *me = pop_move_events(moveEventQueue, &moves);
+
+    MoveEvent *me = pop_move_events(characterMoveEventQueue, &moves);
+    MoveEvent *ame = pop_move_events(aiMoveEventQueue, &aimoves);
     NewcomerEvent *ne = pop_newcomer_events(newcomerEventQueue, &newcomers);
-    if (moves == 0 && newcomers == 0) return;
+    LogoutEvent *le = pop_logout_events(logoutEventQueue, &logouts);
+
+    if (moves == 0 && aimoves == 0 && newcomers == 0 && logouts == 0) return; //TODO ADD
     Response resp = RESPONSE__INIT;
     EventsMessage em = EVENTS_MESSAGE__INIT;
     resp.events = &em;
     resp.type = RESPONSE__TYPE__EVENTS;
 
-    em.n_moveevents = (size_t) moves;
-    em.n_newcomerevents = (size_t) newcomers;
+    em.n_moves = (size_t) moves;
+    em.n_aimoves = (size_t) aimoves;
+    em.n_newcomers = (size_t) newcomers;
+    em.n_logouts = (size_t) logouts;
 
     if (moves != 0) {
-        em.moveevents = malloc(sizeof(MoveEventMessage *) * moves);
+        em.moves = malloc(sizeof(MoveMessage *) * moves);
         for (i = 0; i < moves; i++) {
-            em.moveevents[i] = malloc(sizeof(MoveEventMessage));
-            move_event_message__init(em.moveevents[i]);
-            em.moveevents[i]->id = me->id;
-            em.moveevents[i]->pos_y = me->pos_y;
-            em.moveevents[i]->pos_x = me->pos_x;
+            em.moves[i] = malloc(sizeof(MoveMessage));
+            move_message__init(em.moves[i]);
+            em.moves[i]->id = me->id;
+            em.moves[i]->pos_y = me->pos_y;
+            em.moves[i]->pos_x = me->pos_x;
             me = me->next;
         }
     }
-    if (newcomers != 0) {
-        em.newcomerevents = malloc(sizeof(CharacterMessage *) * newcomers);
-        for (i = 0; i < newcomers; i++) {
-            em.newcomerevents[i] = malloc(sizeof(CharacterMessage));
-            character_message__init(em.newcomerevents[i]);
-            em.newcomerevents[i]->nickname = ne->nickname;
-            em.newcomerevents[i]->class_ = ne->class;
-            em.newcomerevents[i]->level = ne->level;
-            em.newcomerevents[i]->pos_y = ne->pos_y;
-            em.newcomerevents[i]->pos_x = ne->pos_x;
-            em.newcomerevents[i]->hp = ne->hp;
-            em.newcomerevents[i]->mp = ne->mp;
-            em.newcomerevents[i]->id = ne->id;
-            em.newcomerevents[i]->exp = ne->exp;
+    if (aimoves != 0) {
+        em.aimoves = malloc(sizeof(MoveMessage *) * aimoves);
+        for (i = 0; i < aimoves; i++) {
+            em.aimoves[i] = malloc(sizeof(MoveMessage));
+            move_message__init(em.aimoves[i]);
+            em.aimoves[i]->id = ame->id;
+            em.aimoves[i]->pos_y = ame->pos_y;
+            em.aimoves[i]->pos_x = ame->pos_x;
+            ame = ame->next;
         }
     }
+    if (newcomers != 0) {
+        em.newcomers = malloc(sizeof(CharacterMessage *) * newcomers);
+        for (i = 0; i < newcomers; i++) {
+            em.newcomers[i] = malloc(sizeof(CharacterMessage));
+            character_message__init(em.newcomers[i]);
+            em.newcomers[i]->nickname = ne->nickname;
+            em.newcomers[i]->class_ = ne->class;
+            em.newcomers[i]->level = ne->level;
+            em.newcomers[i]->pos_y = ne->pos_y;
+            em.newcomers[i]->pos_x = ne->pos_x;
+            em.newcomers[i]->hp = ne->hp;
+            em.newcomers[i]->mp = ne->mp;
+            em.newcomers[i]->id = ne->id;
+            em.newcomers[i]->exp = ne->exp;
+            ne = ne->next;
+        }
+    }
+    if (logouts != 0) {
+        em.logouts = malloc(sizeof(LogoutMessage *) * logouts);
+        for (i = 0; i < logouts; i++) {
+            em.logouts[i] = malloc(sizeof(LogoutMessage));
+            logout_message__init(em.logouts[i]);
+            em.logouts[i]->id = le->id;
+            le = le->next;
+        }
+    }
+
     while (conn != NULL) {
         send_response(conn->fd, resp);
         conn = conn->next;
     }
+
     for (i = 0; i < moves; i++)
-        free(em.moveevents[i]);
-    free(em.moveevents);
+        free(em.moves[i]);
+    if (moves > 0)
+        free(em.moves);
+
+    for (i = 0; i < aimoves; i++)
+        free(em.aimoves[i]);
+    if (aimoves > 0)
+        free(em.aimoves);
+
+    for (i = 0; i < newcomers; i++)
+        free(em.newcomers[i]);
+    if (newcomers > 0)
+        free(em.newcomers);
+
+    for (i = 0; i < logouts; i++)
+        free(em.logouts[i]);
+    if (logouts > 0)
+        free(em.logouts);
 }
 
 void *begin_broadcast() {
@@ -187,7 +238,7 @@ void *begin_broadcast() {
     sigaddset(&sigset, SIGALRM);
     pthread_sigmask(SIG_UNBLOCK, &sigset, NULL); // unblock alarm signal
     signal(SIGALRM, broadcast_events);
-    set_ticker(10);
+    set_ticker(100);
     while (running) {
         sleep(1);
     }
@@ -197,6 +248,7 @@ void *begin_broadcast() {
 void init_server(int port, int threads, int max_jobs, int max_connections) {
     init_map();
     init_creatures();
+    init_characters();
 
     sigset_t sigset;
     sigemptyset(&sigset);
@@ -209,9 +261,12 @@ void init_server(int port, int threads, int max_jobs, int max_connections) {
     //threadPool = thread_pool_init(threads, max_jobs);
     thpool = thpool_init(threads);
     connectionQueue = connection_queue_init(max_connections);
-    moveEventQueue = move_event_queue_init();
+    characterMoveEventQueue = move_event_queue_init();
+    aiMoveEventQueue = move_event_queue_init();
     newcomerEventQueue = newcomer_event_queue_init();
+    logoutEventQueue = logout_event_queue_init();
     create_detached_thread(begin_broadcast, NULL);
+    create_detached_thread(ai_loop, NULL);
     listen_port();
     /* * create a thread to listen port
      * pthread_t t;
