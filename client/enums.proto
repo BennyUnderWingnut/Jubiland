@@ -1,5 +1,10 @@
 syntax = "proto2";
 
+enum UnitType {
+    CHARACTER = 0;
+    CREATURE = 1;
+}
+
 enum CharacterClass {
     WARRIOR = 0;
     MAGE = 1;
@@ -12,7 +17,7 @@ enum CreatureCategory {
     BOSS = 2;
 }
 enum CreatureState {
-    PEACE = 0;
+    WANDERING = 0;
     COMBAT = 1;
     DEAD = 2;
 }

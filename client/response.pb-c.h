@@ -23,7 +23,8 @@ typedef struct _EventsMessage EventsMessage;
 typedef struct _RefuseLoginMessage RefuseLoginMessage;
 typedef struct _CharacterMessage CharacterMessage;
 typedef struct _CreatureMessage CreatureMessage;
-typedef struct _MoveEventMessage MoveEventMessage;
+typedef struct _MoveMessage MoveMessage;
+typedef struct _LogoutMessage LogoutMessage;
 
 
 /* --- enums --- */
@@ -85,14 +86,18 @@ struct  _WorldStateMessage
 struct  _EventsMessage
 {
   ProtobufCMessage base;
-  size_t n_moveevents;
-  MoveEventMessage **moveevents;
-  size_t n_newcomerevents;
-  CharacterMessage **newcomerevents;
+  size_t n_moves;
+  MoveMessage **moves;
+  size_t n_aimoves;
+  MoveMessage **aimoves;
+  size_t n_newcomers;
+  CharacterMessage **newcomers;
+  size_t n_logouts;
+  LogoutMessage **logouts;
 };
 #define EVENTS_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&events_message__descriptor) \
-    , 0,NULL, 0,NULL }
+    , 0,NULL, 0,NULL, 0,NULL, 0,NULL }
 
 
 struct  _RefuseLoginMessage
@@ -117,10 +122,11 @@ struct  _CharacterMessage
   int32_t pos_x;
   int32_t hp;
   int32_t mp;
+  int32_t ad;
 };
 #define CHARACTER_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \
-    , 0, NULL, CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0 }
+    , 0, NULL, CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0, 0 }
 
 
 struct  _CreatureMessage
@@ -128,28 +134,38 @@ struct  _CreatureMessage
   ProtobufCMessage base;
   int32_t id;
   CreatureCategory category;
-  int32_t attack;
   int32_t level;
   int32_t pos_y;
   int32_t pos_x;
   int32_t hp;
   int32_t max_hp;
+  int32_t ad;
 };
 #define CREATURE_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&creature_message__descriptor) \
     , 0, CREATURE_CATEGORY__NORMAL, 0, 0, 0, 0, 0, 0 }
 
 
-struct  _MoveEventMessage
+struct  _MoveMessage
 {
   ProtobufCMessage base;
   int32_t id;
   int32_t pos_y;
   int32_t pos_x;
 };
-#define MOVE_EVENT_MESSAGE__INIT \
- { PROTOBUF_C_MESSAGE_INIT (&move_event_message__descriptor) \
+#define MOVE_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&move_message__descriptor) \
     , 0, 0, 0 }
+
+
+struct  _LogoutMessage
+{
+  ProtobufCMessage base;
+  int32_t id;
+};
+#define LOGOUT_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&logout_message__descriptor) \
+    , 0 }
 
 
 /* Response methods */
@@ -285,24 +301,43 @@ CreatureMessage *
 void   creature_message__free_unpacked
                      (CreatureMessage *message,
                       ProtobufCAllocator *allocator);
-/* MoveEventMessage methods */
-void   move_event_message__init
-                     (MoveEventMessage         *message);
-size_t move_event_message__get_packed_size
-                     (const MoveEventMessage   *message);
-size_t move_event_message__pack
-                     (const MoveEventMessage   *message,
+/* MoveMessage methods */
+void   move_message__init
+                     (MoveMessage         *message);
+size_t move_message__get_packed_size
+                     (const MoveMessage   *message);
+size_t move_message__pack
+                     (const MoveMessage   *message,
                       uint8_t             *out);
-size_t move_event_message__pack_to_buffer
-                     (const MoveEventMessage   *message,
+size_t move_message__pack_to_buffer
+                     (const MoveMessage   *message,
                       ProtobufCBuffer     *buffer);
-MoveEventMessage *
-       move_event_message__unpack
+MoveMessage *
+       move_message__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data);
-void   move_event_message__free_unpacked
-                     (MoveEventMessage *message,
+void   move_message__free_unpacked
+                     (MoveMessage *message,
+                      ProtobufCAllocator *allocator);
+/* LogoutMessage methods */
+void   logout_message__init
+                     (LogoutMessage         *message);
+size_t logout_message__get_packed_size
+                     (const LogoutMessage   *message);
+size_t logout_message__pack
+                     (const LogoutMessage   *message,
+                      uint8_t             *out);
+size_t logout_message__pack_to_buffer
+                     (const LogoutMessage   *message,
+                      ProtobufCBuffer     *buffer);
+LogoutMessage *
+       logout_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   logout_message__free_unpacked
+                     (LogoutMessage *message,
                       ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
@@ -327,8 +362,11 @@ typedef void (*CharacterMessage_Closure)
 typedef void (*CreatureMessage_Closure)
                  (const CreatureMessage *message,
                   void *closure_data);
-typedef void (*MoveEventMessage_Closure)
-                 (const MoveEventMessage *message,
+typedef void (*MoveMessage_Closure)
+                 (const MoveMessage *message,
+                  void *closure_data);
+typedef void (*LogoutMessage_Closure)
+                 (const LogoutMessage *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -345,7 +383,8 @@ extern const ProtobufCMessageDescriptor refuse_login_message__descriptor;
 extern const ProtobufCEnumDescriptor    refuse_login_message__refuse_type__descriptor;
 extern const ProtobufCMessageDescriptor character_message__descriptor;
 extern const ProtobufCMessageDescriptor creature_message__descriptor;
-extern const ProtobufCMessageDescriptor move_event_message__descriptor;
+extern const ProtobufCMessageDescriptor move_message__descriptor;
+extern const ProtobufCMessageDescriptor logout_message__descriptor;
 
 PROTOBUF_C__END_DECLS
 

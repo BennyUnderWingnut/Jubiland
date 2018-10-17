@@ -11,22 +11,12 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <math.h>
+#include <panel.h>
 
-#define REFRESH_INTERVAL_USEC 20000 // 刷新间隔
-#define MOVE_INTERVAL_USEC 160000 // 移动间隔
-
-#define COLOR_PAIR__TEXT_SELECTED 1
-#define COLOR_PAIR__TERRAIN_EMPTY 2
-#define COLOR_PAIR__TERRAIN_GRASS 3
-#define COLOR_PAIR__TERRAIN_WATER 4
-#define COLOR_PAIR__TERRAIN_MOUNTAIN 5
-
-#define SHAPE_EMPTY     "  "
-#define SHAPE_GRASS     "  "
-#define SHAPE_WATER     "🌊"
-#define SHAPE_MOUNTAIN  "🗻"
-#define SHAPE_CHARACTER    "👦"
-#define SHAPE_ME "🤴"
+#define CREATURE_NUM 1000
+#define SELECT_LOOP 5
+#define NUM_SKILLS_PER_CLASS 2
 
 #define get_terrain_color_pair(terrain_type) (terrain_type+2)
 
@@ -45,5 +35,12 @@
 void exit_game();
 
 void create_detached_thread(void *(*start_routine)(void *), void *arg);
+
+int sock, key;
+
+WINDOW *default_window, *skill_window, *target_window;
+PANEL *skill_panel, *target_info_panel;
+
+double get_euclidean_distance(int y1, int x1, int y2, int x2);
 
 #endif //CLIENT_MYLIB_H

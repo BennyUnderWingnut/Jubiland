@@ -5,8 +5,18 @@
 #include "request.pb-c.h"
 #include "mylib.h"
 
-#define MAX_LEVEL 60
 #define CLASS_TYPES 3
+#define CHARACTER_MAX_LEVEL 20
+#define CHARACTER_CLASS_TYPES 3
+const int EXP_TO_UPGRADE[CHARACTER_MAX_LEVEL + 1];
+const int CHARACTER_MAX_HP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
+const int CHARACTER_MAX_MP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
+const char *CLASS_ICON[CHARACTER_CLASS_TYPES];
+const char *CLASS_NAME[CHARACTER_CLASS_TYPES];
+const char *SKILL_ICON[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_CD[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_RANGE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_TARGET_TYPE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
 
 typedef struct _Character {
     CharacterClass class;
@@ -18,20 +28,22 @@ typedef struct _Character {
     int pos_x;
     int hp;
     int mp;
+    int ad;
 } Character;
 
 typedef struct _CharacterNode {
     Character character;
-    pthread_mutex_t character_data_mutex;
+    pthread_mutex_t character_data_lock;
+    pthread_mutex_t next_lock;
     struct _CharacterNode *next;
 } CharacterNode;
 
-const int EXP_TO_UPGRADE[61];
-const int MAX_HP[3][61];
-const int MAX_MP[3][61];
-const char *CLASS_ICON[3];
-const char *CLASS_NAME[3];
+CharacterNode *ch_list_head, *me;
+
+struct timeval last_cast_time[NUM_SKILLS_PER_CLASS];
 
 Character *init_character(int class);
+
+float get_remaining_cd(int i);
 
 #endif //SERVER_CHARACTER_H

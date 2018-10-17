@@ -1,9 +1,7 @@
 #ifndef CLIENT_GAME_H
 #define CLIENT_GAME_H
 
-#include "mylib.h"
-#include "map.h"
-#include "request.pb-c.h"
+#include "interface.h"
 #include "sync.h"
 
 void main_loop(void);

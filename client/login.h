@@ -4,6 +4,7 @@
 #include "mylib.h"
 #include "socklib.h"
 #include "character.h"
+#include "interface.h"
 #include "request.pb-c.h"
 #include "response.pb-c.h"
 

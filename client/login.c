@@ -1,9 +1,5 @@
 #include "login.h"
 
-extern WINDOW *default_window;
-extern int sock;
-extern int key;
-
 int choose_class(char *nickname);
 
 int input_nickname(CharacterClass class, char *nickname, int *id);
@@ -107,26 +103,24 @@ int input_nickname(CharacterClass class, char *nickname, int *id) {
                     print_bottom_center(MSG_NAME_TOO_LONG);
                     move(y, x);
                 } else {
-                    sock = connect_to_server(HOST_NAME, PORT_NUM);
-                    if (sock == -1) {
+                    if (request_login(class, nickname) == -1) {
                         getyx(default_window, y, x);
                         print_bottom_center(MSG_CANNOT_CONNECT);
                         move(y, x);
+                        break;
+                    };
+                    rv = get_login_status(id);
+                    if (rv == 0) {
+                        print_bottom_center(MSG_LOGIN_SUCCESS);
+                        return 0;
+                    } else if (rv == REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN) {
+                        getyx(default_window, y, x);
+                        print_bottom_center(MSG_NICKNAME_TAKEN);
+                        move(y, x);
                     } else {
-                        request_login(class, nickname);
-                        rv = get_login_status(id);
-                        if (rv == 0) {
-                            print_bottom_center(MSG_LOGIN_SUCCESS);
-                            return 0;
-                        } else if (rv == REFUSE_LOGIN_MESSAGE__REFUSE_TYPE__NICKNAME_TAKEN) {
-                            getyx(default_window, y, x);
-                            print_bottom_center(MSG_NICKNAME_TAKEN);
-                            move(y, x);
-                        } else {
-                            getyx(default_window, y, x);
-                            print_bottom_center(MSG_UNKNOWN_ERROR);
-                            move(y, x);
-                        }
+                        getyx(default_window, y, x);
+                        print_bottom_center(MSG_UNKNOWN_ERROR);
+                        move(y, x);
                     }
                 }
                 break;
@@ -147,6 +141,7 @@ int input_nickname(CharacterClass class, char *nickname, int *id) {
 }
 
 int request_login(CharacterClass class, char *nickname) {
+    if ((sock = connect_to_server(HOST_NAME, PORT_NUM)) == -1) return -1;
     Request req = REQUEST__INIT;
     LoginRequest lr = LOGIN_REQUEST__INIT;
     req.type = REQUEST__TYPE__LOGIN;

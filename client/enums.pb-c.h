@@ -19,6 +19,11 @@ PROTOBUF_C__BEGIN_DECLS
 
 /* --- enums --- */
 
+typedef enum _UnitType {
+  UNIT_TYPE__CHARACTER = 0,
+  UNIT_TYPE__CREATURE = 1
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(UNIT_TYPE)
+} UnitType;
 typedef enum _CharacterClass {
   CHARACTER_CLASS__WARRIOR = 0,
   CHARACTER_CLASS__MAGE = 1,
@@ -32,7 +37,7 @@ typedef enum _CreatureCategory {
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CREATURE_CATEGORY)
 } CreatureCategory;
 typedef enum _CreatureState {
-  CREATURE_STATE__PEACE = 0,
+  CREATURE_STATE__WANDERING = 0,
   CREATURE_STATE__COMBAT = 1,
   CREATURE_STATE__DEAD = 2
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(CREATURE_STATE)
@@ -48,6 +53,7 @@ typedef enum _CreatureState {
 
 /* --- descriptors --- */
 
+extern const ProtobufCEnumDescriptor    unit_type__descriptor;
 extern const ProtobufCEnumDescriptor    character_class__descriptor;
 extern const ProtobufCEnumDescriptor    creature_category__descriptor;
 extern const ProtobufCEnumDescriptor    creature_state__descriptor;

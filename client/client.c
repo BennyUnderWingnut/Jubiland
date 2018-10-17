@@ -1,13 +1,4 @@
-#include "mylib.h"
-#include "map.h"
-#include "login.h"
-#include "socklib.h"
-#include "sync.h"
 #include "game.h"
-
-WINDOW *default_window;
-int sock, my_id;
-char nickname[15] = "";
 
 void init_curses(void);
 
@@ -18,6 +9,7 @@ int main(void) {
     int id = login();
     init_map();
     init_world(id);
+    init_interface();
     bind_signals();
     create_detached_thread(listen_events, (void *) &sock);
     main_loop();
