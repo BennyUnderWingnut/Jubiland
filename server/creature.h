@@ -4,6 +4,10 @@
 #define CREATURE_MAX_LEVEL 20
 #define CREATURE_CATEGORIES_NUM 3
 #define CREATURE_NUM 1000
+#define CREATURE_MOVE_INTERVAL_SEC 0.2
+#define CREATURE_ATTACK_RANGE 1.5
+#define CREATURE_ATTACK_INTERVAL_SEC 1
+#define MAX_NUM_THREATS 5
 
 #include "mylib.h"
 #include "enums.pb-c.h"
@@ -21,6 +25,11 @@ typedef struct _Creature {
     int hp;
     int max_hp;
     CreatureState state;
+    struct timeval enter_state_time;
+    struct timeval last_move_time;
+    struct timeval last_attack_time;
+    int num_threats;
+    int threats[MAX_NUM_THREATS];
 } Creature;
 
 const int CREATURE_MAX_HP[CREATURE_CATEGORIES_NUM][CREATURE_MAX_LEVEL + 1];

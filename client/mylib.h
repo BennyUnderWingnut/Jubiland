@@ -13,12 +13,13 @@
 #include <pthread.h>
 #include <math.h>
 #include <panel.h>
+#include <signal.h>
 
 #define CREATURE_NUM 1000
 #define SELECT_LOOP 5
 #define NUM_SKILLS_PER_CLASS 2
 
-#define get_terrain_color_pair(terrain_type) (terrain_type+2)
+#define get_terrain_color_pair(terrain_type) (terrain_type + 3)
 
 #define print_center(str) (mvprintw(LINES / 2, (int) ((COLS - strlen(str)) / 2), "%s", str))
 
@@ -41,6 +42,10 @@ int sock, key;
 WINDOW *default_window, *skill_window, *target_window;
 PANEL *skill_panel, *target_info_panel;
 
-double get_euclidean_distance(int y1, int x1, int y2, int x2);
+double euclidean_distance(int y1, int x1, int y2, int x2);
+
+float time_pass_since(struct timeval t);
+
+int set_ticker(long n_msecs);
 
 #endif //CLIENT_MYLIB_H

@@ -9,14 +9,16 @@
 #define CHARACTER_MAX_LEVEL 20
 #define CHARACTER_CLASS_TYPES 3
 const int EXP_TO_UPGRADE[CHARACTER_MAX_LEVEL + 1];
+const int SKILL_CD[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const float SKILL_RANGE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_TARGET_TYPE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_MP_COST[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
 const int CHARACTER_MAX_HP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
 const int CHARACTER_MAX_MP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
-const char *CLASS_ICON[CHARACTER_CLASS_TYPES];
+const int CHARACTER_AD[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
+const char *SHAPE_CLASSES[CHARACTER_CLASS_TYPES];
 const char *CLASS_NAME[CHARACTER_CLASS_TYPES];
-const char *SKILL_ICON[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
-const int SKILL_CD[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
-const int SKILL_RANGE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
-const int SKILL_TARGET_TYPE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const char *SHAPE_SKILLS[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
 
 typedef struct _Character {
     CharacterClass class;
@@ -29,6 +31,12 @@ typedef struct _Character {
     int hp;
     int mp;
     int ad;
+    int max_hp;
+    int max_mp;
+
+    CharacterClass effect_class;
+    int effect_skill;
+    struct timeval effect_time;
 } Character;
 
 typedef struct _CharacterNode {
@@ -44,6 +52,8 @@ struct timeval last_cast_time[NUM_SKILLS_PER_CLASS];
 
 Character *init_character(int class);
 
-float get_remaining_cd(int i);
+float get_remaining_cd(int sk);
+
+CharacterNode *get_character_node_by_id(int id);
 
 #endif //SERVER_CHARACTER_H

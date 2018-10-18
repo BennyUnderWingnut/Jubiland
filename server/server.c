@@ -4,8 +4,7 @@ void init_server(int port, int threads, int max_jobs, int max_connections);
 
 void *listen_port();
 
-time_t server_started;
-int sock, running;
+int sock, running, wakeup_count;
 //ThreadPool *threadPool;
 threadpool thpool;
 ConnectionQueue *connectionQueue;
@@ -13,7 +12,10 @@ MoveEventQueue *characterMoveEventQueue;
 MoveEventQueue *aiMoveEventQueue;
 NewcomerEventQueue *newcomerEventQueue;
 LogoutEventQueue *logoutEventQueue;
+SkillEventQueue *skillEventQueue;
+CreatureStateChangeEventQueue *creatureStateChangeEventQueue;
 pthread_mutex_t ai_move_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t remove_not_responding_connections_lock = PTHREAD_MUTEX_INITIALIZER;
 
 int main(int ac, char *av[]) {
     int threads = DEFAULT_NUM_THREADS;
@@ -46,7 +48,6 @@ void *handle_call(void *fdptr) {
         return NULL;
     }
     Request *req;
-    printf("fd is %d\n", fd);
     int *stat = malloc(sizeof(int));
     req = get_request(fd, stat);
     if (req == NULL) {
@@ -54,7 +55,6 @@ void *handle_call(void *fdptr) {
         if (*stat != 1)
             fprintf(stderr, "Error unpacking incoming message\n");
     } else {
-        time(&conn->last_request);
         switch (req->type) {
             case REQUEST__TYPE__LOGIN:
                 if (req->login == NULL) break;
@@ -71,8 +71,18 @@ void *handle_call(void *fdptr) {
                 break;
             case REQUEST__TYPE__MOVE:
                 if (req->move == NULL) break;
-                if (req->move->key != conn->key) break;
+                if (req->key != conn->key) break;
                 move_character(conn, req->move->pos_y, req->move->pos_x);
+                break;
+            case REQUEST__TYPE__SKILL:
+                if (req->skill == NULL) break;
+                if (req->key != conn->key) break;
+                use_skill(conn, req->skill->skill, req->skill->target_id);
+                break;
+            case REQUEST__TYPE__KEEP:
+                if (req->key != conn->key) break;
+                gettimeofday(&conn->last_keep_connection, NULL);
+                reset_key(conn);
                 break;
             default:;
         }
@@ -137,17 +147,21 @@ void *listen_port() {
 }
 
 void broadcast_events() {
+    wakeup_count = (wakeup_count + 1) % 100000;
     pthread_mutex_unlock(&ai_move_lock);
+    pthread_mutex_unlock(&remove_not_responding_connections_lock);
 
-    int moves, aimoves, newcomers, logouts, i;
+    int i, moves, aimoves, newcomers, logouts, skills, cschanges;
     Connection *conn = connectionQueue->head->next;
 
-    MoveEvent *me = pop_move_events(characterMoveEventQueue, &moves);
-    MoveEvent *ame = pop_move_events(aiMoveEventQueue, &aimoves);
-    NewcomerEvent *ne = pop_newcomer_events(newcomerEventQueue, &newcomers);
-    LogoutEvent *le = pop_logout_events(logoutEventQueue, &logouts);
+    MoveEvent *me = pop_move_events(characterMoveEventQueue, &moves), *pme;
+    MoveEvent *ame = pop_move_events(aiMoveEventQueue, &aimoves), *pame;
+    NewcomerEvent *ne = pop_newcomer_events(newcomerEventQueue, &newcomers), *pne;
+    LogoutEvent *le = pop_logout_events(logoutEventQueue, &logouts), *ple;
+    SkillEvent *se = pop_skill_events(skillEventQueue, &skills), *pse;
+    CreatureStateChangeEvent *ce = pop_creature_state_change_events(creatureStateChangeEventQueue, &cschanges), *pce;
 
-    if (moves == 0 && aimoves == 0 && newcomers == 0 && logouts == 0) return; //TODO ADD
+    if (moves == 0 && aimoves == 0 && newcomers == 0 && logouts == 0 && skills == 0 && cschanges == 0) return;
     Response resp = RESPONSE__INIT;
     EventsMessage em = EVENTS_MESSAGE__INIT;
     resp.events = &em;
@@ -157,6 +171,8 @@ void broadcast_events() {
     em.n_aimoves = (size_t) aimoves;
     em.n_newcomers = (size_t) newcomers;
     em.n_logouts = (size_t) logouts;
+    em.n_skills = (size_t) skills;
+    em.n_cschanges = (size_t) cschanges;
 
     if (moves != 0) {
         em.moves = malloc(sizeof(MoveMessage *) * moves);
@@ -166,7 +182,9 @@ void broadcast_events() {
             em.moves[i]->id = me->id;
             em.moves[i]->pos_y = me->pos_y;
             em.moves[i]->pos_x = me->pos_x;
+            pme = me;
             me = me->next;
+            free(pme);
         }
     }
     if (aimoves != 0) {
@@ -177,7 +195,9 @@ void broadcast_events() {
             em.aimoves[i]->id = ame->id;
             em.aimoves[i]->pos_y = ame->pos_y;
             em.aimoves[i]->pos_x = ame->pos_x;
+            pame = ame;
             ame = ame->next;
+            free(pame);
         }
     }
     if (newcomers != 0) {
@@ -194,7 +214,9 @@ void broadcast_events() {
             em.newcomers[i]->mp = ne->mp;
             em.newcomers[i]->id = ne->id;
             em.newcomers[i]->exp = ne->exp;
+            pne = ne;
             ne = ne->next;
+            free(pne);
         }
     }
     if (logouts != 0) {
@@ -203,7 +225,38 @@ void broadcast_events() {
             em.logouts[i] = malloc(sizeof(LogoutMessage));
             logout_message__init(em.logouts[i]);
             em.logouts[i]->id = le->id;
+            ple = le;
             le = le->next;
+            free(ple);
+        }
+    }
+    if (skills != 0) {
+        em.skills = malloc(sizeof(SkillMessage *) * skills);
+        for (i = 0; i < skills; i++) {
+            em.skills[i] = malloc(sizeof(SkillMessage));
+            skill_message__init(em.skills[i]);
+            em.skills[i]->target_type = se->target_type;
+            em.skills[i]->target_id = se->target_id;
+            em.skills[i]->source_type = se->source_type;
+            em.skills[i]->source_id = se->source_id;
+            em.skills[i]->skill = se->skill;
+            em.skills[i]->source_mp = se->source_mp;
+            em.skills[i]->target_hp = se->target_hp;
+            pse = se;
+            se = se->next;
+            free(pse);
+        }
+    }
+    if (cschanges != 0) {
+        em.cschanges = malloc(sizeof(CreatureStateChangeMessage *) * cschanges);
+        for (i = 0; i < cschanges; i++) {
+            em.cschanges[i] = malloc(sizeof(CreatureStateChangeMessage));
+            creature_state_change_message__init(em.cschanges[i]);
+            em.cschanges[i]->id = ce->id;
+            em.cschanges[i]->state = ce->state;
+            pce = ce;
+            ce = ce->next;
+            free(pce);
         }
     }
 
@@ -231,6 +284,16 @@ void broadcast_events() {
         free(em.logouts[i]);
     if (logouts > 0)
         free(em.logouts);
+
+    for (i = 0; i < skills; i++)
+        free(em.skills[i]);
+    if (skills > 0)
+        free(em.skills);
+
+    for (i = 0; i < cschanges; i++)
+        free(em.cschanges[i]);
+    if (cschanges > 0)
+        free(em.cschanges);
 }
 
 void *begin_broadcast() {
@@ -257,7 +320,6 @@ void init_server(int port, int threads, int max_jobs, int max_connections) {
 
     sock = make_server_socket(port);
     if (sock == -1) exit(2);
-    time(&server_started);
     //threadPool = thread_pool_init(threads, max_jobs);
     thpool = thpool_init(threads);
     connectionQueue = connection_queue_init(max_connections);
@@ -265,8 +327,11 @@ void init_server(int port, int threads, int max_jobs, int max_connections) {
     aiMoveEventQueue = move_event_queue_init();
     newcomerEventQueue = newcomer_event_queue_init();
     logoutEventQueue = logout_event_queue_init();
+    skillEventQueue = skill_event_queue_init();
+    creatureStateChangeEventQueue = creature_state_change_event_queue_init();
     create_detached_thread(begin_broadcast, NULL);
     create_detached_thread(ai_loop, NULL);
+    create_detached_thread(remove_not_responding_connections_loop, NULL);
     listen_port();
     /* * create a thread to listen port
      * pthread_t t;

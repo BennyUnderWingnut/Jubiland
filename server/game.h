@@ -14,4 +14,6 @@ int send_world_status(ConnectionQueue *connectionQueue, Connection *connection);
 
 int move_character(Connection *connection, int y, int x);
 
+int use_skill(Connection *connection, int skill, int target_id);
+
 #endif //SERVER_GAME_H

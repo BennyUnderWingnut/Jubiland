@@ -10,4 +10,6 @@ void *listen_events(void *sockptr);
 
 void end_game();
 
+void *keep_connection_loop();
+
 #endif //CLIENT_GAME_H

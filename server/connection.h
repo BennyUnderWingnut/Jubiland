@@ -1,11 +1,8 @@
 #ifndef SERVER_LOGIN_H
 #define SERVER_LOGIN_H
 
-#include <pthread.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-//#include "thread_pool.h"
 
+//#include "thread_pool.h"
 #include "thpool.h"
 #include "socklib.h"
 #include "request.pb-c.h"
@@ -13,11 +10,13 @@
 #include "character.h"
 #include "event.h"
 
+#define CONNECTION_TIMEOUT_SEC 300
+
 typedef struct _Connection {
     int fd;
     int listened; // socket is being listened
     int key; // key used to verify client
-    time_t last_request;
+    struct timeval last_keep_connection;
     pthread_mutex_t character_data_lock;
     Character *character;
     struct _Connection *prev;
@@ -42,5 +41,11 @@ Connection *connection_queue_get_connection(ConnectionQueue *queue, int fd);
 int send_login_fail(Connection *conn, RefuseLoginMessage__RefuseType type);
 
 int send_welcome_message(Connection *conn, int key);
+
+Connection *get_connection_by_id(ConnectionQueue *queue, int id);
+
+int reset_key(Connection *conn);
+
+void *remove_not_responding_connections_loop();
 
 #endif //SERVER_LOGIN_H

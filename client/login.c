@@ -14,14 +14,23 @@ int login() {
 }
 
 void refresh_class_options(int cls) {
+    curs_set(0);
     clear();
     print_bottom_center(MSG_EXIT_HINT);
     print_top_center(MSG_CHOOSE_CLASS_HINT);
-    char str[20];
+    char str[60];
+    sprintf(str, "Welcome to  ");
+    mvaddstr(LINES / 2 - CLASS_TYPES / 2 - 7, (int) ((COLS - strlen(str)) / 2), str);
+    sprintf(str, "            😆😂🤣😎😍🤤😚");
+    mvaddstr(LINES / 2 - CLASS_TYPES / 2 - 5, (int) ((COLS - strlen(str)) / 2), str);
+    sprintf(str, "  😚 Jubiland 😜");
+    mvaddstr(LINES / 2 - CLASS_TYPES / 2 - 4, (int) ((COLS - strlen(str)) / 2), str);
+    sprintf(str, "            😋🤓🤠🤑😇🤗😬");
+    mvaddstr(LINES / 2 - CLASS_TYPES / 2 - 3, (int) ((COLS - strlen(str)) / 2), str);
     for (int i = 0; i < CLASS_TYPES; ++i) {
         if (i == cls)
             attron(COLOR_PAIR(COLOR_PAIR__TEXT_SELECTED));
-        sprintf(str, "%10s %-6s", CLASS_NAME[i], CLASS_ICON[i]);
+        sprintf(str, "%10s %-6s", CLASS_NAME[i], SHAPE_CLASSES[i]);
         mvaddstr(LINES / 2 - CLASS_TYPES / 2 + i, (int) ((COLS - strlen(str)) / 2), str);
         if (i == cls)
             attroff(COLOR_PAIR(COLOR_PAIR__TEXT_SELECTED));
@@ -39,7 +48,6 @@ void refresh_nickname_input(char *nickname) {
 }
 
 int choose_class(char *nickname) {
-    curs_set(0);
     int ch, id;
     int class = 0;
     do {
@@ -145,6 +153,7 @@ int request_login(CharacterClass class, char *nickname) {
     Request req = REQUEST__INIT;
     LoginRequest lr = LOGIN_REQUEST__INIT;
     req.type = REQUEST__TYPE__LOGIN;
+    req.key = 0;
     req.login = &lr;
     lr.nickname = nickname;
     lr.class_ = class;

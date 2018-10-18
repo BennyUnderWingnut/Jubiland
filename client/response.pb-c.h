@@ -25,6 +25,9 @@ typedef struct _CharacterMessage CharacterMessage;
 typedef struct _CreatureMessage CreatureMessage;
 typedef struct _MoveMessage MoveMessage;
 typedef struct _LogoutMessage LogoutMessage;
+typedef struct _SkillMessage SkillMessage;
+typedef struct _CreatureStateChangeMessage CreatureStateChangeMessage;
+typedef struct _ResetKeyMessage ResetKeyMessage;
 
 
 /* --- enums --- */
@@ -33,7 +36,8 @@ typedef enum _Response__Type {
   RESPONSE__TYPE__WELCOME_MESSAGE = 0,
   RESPONSE__TYPE__REFUSE_LOGIN = 1,
   RESPONSE__TYPE__WORLD_STATE = 2,
-  RESPONSE__TYPE__EVENTS = 4
+  RESPONSE__TYPE__EVENTS = 4,
+  RESPONSE__TYPE__RESET_KEY = 5
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(RESPONSE__TYPE)
 } Response__Type;
 typedef enum _RefuseLoginMessage__RefuseType {
@@ -53,10 +57,11 @@ struct  _Response
   RefuseLoginMessage *refuselogin;
   WorldStateMessage *worldstate;
   EventsMessage *events;
+  ResetKeyMessage *resetkey;
 };
 #define RESPONSE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&response__descriptor) \
-    , RESPONSE__TYPE__WELCOME_MESSAGE, NULL, NULL, NULL, NULL }
+    , RESPONSE__TYPE__WELCOME_MESSAGE, NULL, NULL, NULL, NULL, NULL }
 
 
 struct  _WelcomeMessage
@@ -94,10 +99,14 @@ struct  _EventsMessage
   CharacterMessage **newcomers;
   size_t n_logouts;
   LogoutMessage **logouts;
+  size_t n_skills;
+  SkillMessage **skills;
+  size_t n_cschanges;
+  CreatureStateChangeMessage **cschanges;
 };
 #define EVENTS_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&events_message__descriptor) \
-    , 0,NULL, 0,NULL, 0,NULL, 0,NULL }
+    , 0,NULL, 0,NULL, 0,NULL, 0,NULL, 0,NULL, 0,NULL }
 
 
 struct  _RefuseLoginMessage
@@ -123,10 +132,12 @@ struct  _CharacterMessage
   int32_t hp;
   int32_t mp;
   int32_t ad;
+  int32_t max_hp;
+  int32_t max_mp;
 };
 #define CHARACTER_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&character_message__descriptor) \
-    , 0, NULL, CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0, 0 }
+    , 0, NULL, CHARACTER_CLASS__WARRIOR, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
 
 struct  _CreatureMessage
@@ -139,11 +150,12 @@ struct  _CreatureMessage
   int32_t pos_x;
   int32_t hp;
   int32_t max_hp;
-  int32_t ad;
+  int32_t exp;
+  CreatureState state;
 };
 #define CREATURE_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&creature_message__descriptor) \
-    , 0, CREATURE_CATEGORY__NORMAL, 0, 0, 0, 0, 0, 0 }
+    , 0, CREATURE_CATEGORY__NORMAL, 0, 0, 0, 0, 0, 0, CREATURE_STATE__WANDERING }
 
 
 struct  _MoveMessage
@@ -165,6 +177,43 @@ struct  _LogoutMessage
 };
 #define LOGOUT_MESSAGE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&logout_message__descriptor) \
+    , 0 }
+
+
+struct  _SkillMessage
+{
+  ProtobufCMessage base;
+  UnitType source_type;
+  int32_t source_id;
+  UnitType target_type;
+  int32_t target_id;
+  int32_t skill;
+  int32_t source_mp;
+  int32_t target_hp;
+};
+#define SKILL_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&skill_message__descriptor) \
+    , UNIT_TYPE__CHARACTER, 0, UNIT_TYPE__CHARACTER, 0, 0, 0, 0 }
+
+
+struct  _CreatureStateChangeMessage
+{
+  ProtobufCMessage base;
+  int32_t id;
+  CreatureState state;
+};
+#define CREATURE_STATE_CHANGE_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&creature_state_change_message__descriptor) \
+    , 0, CREATURE_STATE__WANDERING }
+
+
+struct  _ResetKeyMessage
+{
+  ProtobufCMessage base;
+  int32_t key;
+};
+#define RESET_KEY_MESSAGE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&reset_key_message__descriptor) \
     , 0 }
 
 
@@ -339,6 +388,63 @@ LogoutMessage *
 void   logout_message__free_unpacked
                      (LogoutMessage *message,
                       ProtobufCAllocator *allocator);
+/* SkillMessage methods */
+void   skill_message__init
+                     (SkillMessage         *message);
+size_t skill_message__get_packed_size
+                     (const SkillMessage   *message);
+size_t skill_message__pack
+                     (const SkillMessage   *message,
+                      uint8_t             *out);
+size_t skill_message__pack_to_buffer
+                     (const SkillMessage   *message,
+                      ProtobufCBuffer     *buffer);
+SkillMessage *
+       skill_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   skill_message__free_unpacked
+                     (SkillMessage *message,
+                      ProtobufCAllocator *allocator);
+/* CreatureStateChangeMessage methods */
+void   creature_state_change_message__init
+                     (CreatureStateChangeMessage         *message);
+size_t creature_state_change_message__get_packed_size
+                     (const CreatureStateChangeMessage   *message);
+size_t creature_state_change_message__pack
+                     (const CreatureStateChangeMessage   *message,
+                      uint8_t             *out);
+size_t creature_state_change_message__pack_to_buffer
+                     (const CreatureStateChangeMessage   *message,
+                      ProtobufCBuffer     *buffer);
+CreatureStateChangeMessage *
+       creature_state_change_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   creature_state_change_message__free_unpacked
+                     (CreatureStateChangeMessage *message,
+                      ProtobufCAllocator *allocator);
+/* ResetKeyMessage methods */
+void   reset_key_message__init
+                     (ResetKeyMessage         *message);
+size_t reset_key_message__get_packed_size
+                     (const ResetKeyMessage   *message);
+size_t reset_key_message__pack
+                     (const ResetKeyMessage   *message,
+                      uint8_t             *out);
+size_t reset_key_message__pack_to_buffer
+                     (const ResetKeyMessage   *message,
+                      ProtobufCBuffer     *buffer);
+ResetKeyMessage *
+       reset_key_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   reset_key_message__free_unpacked
+                     (ResetKeyMessage *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*Response_Closure)
@@ -368,6 +474,15 @@ typedef void (*MoveMessage_Closure)
 typedef void (*LogoutMessage_Closure)
                  (const LogoutMessage *message,
                   void *closure_data);
+typedef void (*SkillMessage_Closure)
+                 (const SkillMessage *message,
+                  void *closure_data);
+typedef void (*CreatureStateChangeMessage_Closure)
+                 (const CreatureStateChangeMessage *message,
+                  void *closure_data);
+typedef void (*ResetKeyMessage_Closure)
+                 (const ResetKeyMessage *message,
+                  void *closure_data);
 
 /* --- services --- */
 
@@ -385,6 +500,9 @@ extern const ProtobufCMessageDescriptor character_message__descriptor;
 extern const ProtobufCMessageDescriptor creature_message__descriptor;
 extern const ProtobufCMessageDescriptor move_message__descriptor;
 extern const ProtobufCMessageDescriptor logout_message__descriptor;
+extern const ProtobufCMessageDescriptor skill_message__descriptor;
+extern const ProtobufCMessageDescriptor creature_state_change_message__descriptor;
+extern const ProtobufCMessageDescriptor reset_key_message__descriptor;
 
 PROTOBUF_C__END_DECLS
 

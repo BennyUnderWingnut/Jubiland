@@ -3,6 +3,10 @@
 extern int sock;
 extern int character_number;
 extern LogoutEventQueue *logoutEventQueue;
+extern int running;
+extern pthread_mutex_t remove_not_responding_connections_lock;
+extern int wakeup_count;
+extern ConnectionQueue *connectionQueue;
 
 ConnectionQueue *connection_queue_init(int max_connections) {
     ConnectionQueue *queue = malloc(sizeof(ConnectionQueue));
@@ -25,7 +29,7 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     conn->key = (int) random();
     conn->next = queue->head->next;
     conn->prev = queue->head;
-    time(&conn->last_request);
+    gettimeofday(&conn->last_keep_connection, NULL);
     conn->character = NULL;
     pthread_mutex_init(&conn->character_data_lock, NULL);
     if (queue->head->next != NULL)
@@ -92,4 +96,42 @@ int send_login_fail(Connection *conn, RefuseLoginMessage__RefuseType type) {
     rl.type = type;
     send_response(conn->fd, resp);
     return 0;
+}
+
+Connection *get_connection_by_id(ConnectionQueue *queue, int id) {
+    Connection *conn = queue->head->next;
+    while (conn != NULL) {
+        if (conn->character->id == id) return conn;
+        conn = conn->next;
+    }
+    return NULL;
+}
+
+int reset_key(Connection *conn) {
+    conn->key = (int) random();
+    Response resp = RESPONSE__INIT;
+    ResetKeyMessage rk = RESET_KEY_MESSAGE__INIT;
+    resp.type = RESPONSE__TYPE__RESET_KEY;
+    resp.resetkey = &rk;
+    rk.key = conn->key;
+    send_response(conn->fd, resp);
+    return 0;
+};
+
+void *remove_not_responding_connections_loop() {
+    while (running) {
+        pthread_mutex_lock(&remove_not_responding_connections_lock);
+        if (wakeup_count % 1000 == 0) {
+            pthread_mutex_lock(&connectionQueue->queue_lock);
+            Connection *conn = connectionQueue->head->next, *next;
+            while (conn != NULL) {
+                next = conn->next;
+                if (time_pass_since(conn->last_keep_connection) > CONNECTION_TIMEOUT_SEC)
+                    connection_queue_remove_connection(connectionQueue, conn);
+                conn = next;
+            }
+            pthread_mutex_unlock(&connectionQueue->queue_lock);
+        }
+    }
+    return NULL;
 }

@@ -412,20 +412,157 @@ void   logout_message__free_unpacked
   assert(message->base.descriptor == &logout_message__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCEnumValue response__type__enum_values_by_number[4] =
+void   skill_message__init
+                     (SkillMessage         *message)
+{
+  static const SkillMessage init_value = SKILL_MESSAGE__INIT;
+  *message = init_value;
+}
+size_t skill_message__get_packed_size
+                     (const SkillMessage *message)
+{
+  assert(message->base.descriptor == &skill_message__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t skill_message__pack
+                     (const SkillMessage *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &skill_message__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t skill_message__pack_to_buffer
+                     (const SkillMessage *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &skill_message__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SkillMessage *
+       skill_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SkillMessage *)
+     protobuf_c_message_unpack (&skill_message__descriptor,
+                                allocator, len, data);
+}
+void   skill_message__free_unpacked
+                     (SkillMessage *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &skill_message__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+void   creature_state_change_message__init
+                     (CreatureStateChangeMessage         *message)
+{
+  static const CreatureStateChangeMessage init_value = CREATURE_STATE_CHANGE_MESSAGE__INIT;
+  *message = init_value;
+}
+size_t creature_state_change_message__get_packed_size
+                     (const CreatureStateChangeMessage *message)
+{
+  assert(message->base.descriptor == &creature_state_change_message__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t creature_state_change_message__pack
+                     (const CreatureStateChangeMessage *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &creature_state_change_message__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t creature_state_change_message__pack_to_buffer
+                     (const CreatureStateChangeMessage *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &creature_state_change_message__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+CreatureStateChangeMessage *
+       creature_state_change_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (CreatureStateChangeMessage *)
+     protobuf_c_message_unpack (&creature_state_change_message__descriptor,
+                                allocator, len, data);
+}
+void   creature_state_change_message__free_unpacked
+                     (CreatureStateChangeMessage *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &creature_state_change_message__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+void   reset_key_message__init
+                     (ResetKeyMessage         *message)
+{
+  static const ResetKeyMessage init_value = RESET_KEY_MESSAGE__INIT;
+  *message = init_value;
+}
+size_t reset_key_message__get_packed_size
+                     (const ResetKeyMessage *message)
+{
+  assert(message->base.descriptor == &reset_key_message__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t reset_key_message__pack
+                     (const ResetKeyMessage *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &reset_key_message__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t reset_key_message__pack_to_buffer
+                     (const ResetKeyMessage *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &reset_key_message__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+ResetKeyMessage *
+       reset_key_message__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (ResetKeyMessage *)
+     protobuf_c_message_unpack (&reset_key_message__descriptor,
+                                allocator, len, data);
+}
+void   reset_key_message__free_unpacked
+                     (ResetKeyMessage *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &reset_key_message__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+static const ProtobufCEnumValue response__type__enum_values_by_number[5] =
 {
   { "WELCOME_MESSAGE", "RESPONSE__TYPE__WELCOME_MESSAGE", 0 },
   { "REFUSE_LOGIN", "RESPONSE__TYPE__REFUSE_LOGIN", 1 },
   { "WORLD_STATE", "RESPONSE__TYPE__WORLD_STATE", 2 },
   { "EVENTS", "RESPONSE__TYPE__EVENTS", 4 },
+  { "RESET_KEY", "RESPONSE__TYPE__RESET_KEY", 5 },
 };
 static const ProtobufCIntRange response__type__value_ranges[] = {
-{0, 0},{4, 3},{0, 4}
+{0, 0},{4, 3},{0, 5}
 };
-static const ProtobufCEnumValueIndex response__type__enum_values_by_name[4] =
+static const ProtobufCEnumValueIndex response__type__enum_values_by_name[5] =
 {
   { "EVENTS", 3 },
   { "REFUSE_LOGIN", 1 },
+  { "RESET_KEY", 4 },
   { "WELCOME_MESSAGE", 0 },
   { "WORLD_STATE", 2 },
 };
@@ -436,15 +573,15 @@ const ProtobufCEnumDescriptor response__type__descriptor =
   "Type",
   "Response__Type",
   "",
-  4,
+  5,
   response__type__enum_values_by_number,
-  4,
+  5,
   response__type__enum_values_by_name,
   2,
   response__type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor response__field_descriptors[5] =
+static const ProtobufCFieldDescriptor response__field_descriptors[6] =
 {
   {
     "type",
@@ -506,10 +643,23 @@ static const ProtobufCFieldDescriptor response__field_descriptors[5] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "resetKey",
+    6,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    0,   /* quantifier_offset */
+    offsetof(Response, resetkey),
+    &reset_key_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned response__field_indices_by_name[] = {
   4,   /* field[4] = events */
   2,   /* field[2] = refuseLogin */
+  5,   /* field[5] = resetKey */
   0,   /* field[0] = type */
   1,   /* field[1] = welcomeMsg */
   3,   /* field[3] = worldState */
@@ -517,7 +667,7 @@ static const unsigned response__field_indices_by_name[] = {
 static const ProtobufCIntRange response__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 5 }
+  { 0, 6 }
 };
 const ProtobufCMessageDescriptor response__descriptor =
 {
@@ -527,7 +677,7 @@ const ProtobufCMessageDescriptor response__descriptor =
   "Response",
   "",
   sizeof(Response),
-  5,
+  6,
   response__field_descriptors,
   response__field_indices_by_name,
   1,  response__number_ranges,
@@ -636,7 +786,7 @@ const ProtobufCMessageDescriptor world_state_message__descriptor =
   (ProtobufCMessageInit) world_state_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor events_message__field_descriptors[4] =
+static const ProtobufCFieldDescriptor events_message__field_descriptors[6] =
 {
   {
     "moves",
@@ -686,17 +836,43 @@ static const ProtobufCFieldDescriptor events_message__field_descriptors[4] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "skills",
+    5,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(EventsMessage, n_skills),
+    offsetof(EventsMessage, skills),
+    &skill_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "cschanges",
+    6,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(EventsMessage, n_cschanges),
+    offsetof(EventsMessage, cschanges),
+    &creature_state_change_message__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned events_message__field_indices_by_name[] = {
   1,   /* field[1] = aimoves */
+  5,   /* field[5] = cschanges */
   3,   /* field[3] = logouts */
   0,   /* field[0] = moves */
   2,   /* field[2] = newcomers */
+  4,   /* field[4] = skills */
 };
 static const ProtobufCIntRange events_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 4 }
+  { 0, 6 }
 };
 const ProtobufCMessageDescriptor events_message__descriptor =
 {
@@ -706,7 +882,7 @@ const ProtobufCMessageDescriptor events_message__descriptor =
   "EventsMessage",
   "",
   sizeof(EventsMessage),
-  4,
+  6,
   events_message__field_descriptors,
   events_message__field_indices_by_name,
   1,  events_message__number_ranges,
@@ -781,7 +957,7 @@ const ProtobufCMessageDescriptor refuse_login_message__descriptor =
   (ProtobufCMessageInit) refuse_login_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor character_message__field_descriptors[10] =
+static const ProtobufCFieldDescriptor character_message__field_descriptors[12] =
 {
   {
     "id",
@@ -903,6 +1079,30 @@ static const ProtobufCFieldDescriptor character_message__field_descriptors[10] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "max_hp",
+    11,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(CharacterMessage, max_hp),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "max_mp",
+    12,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(CharacterMessage, max_mp),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned character_message__field_indices_by_name[] = {
   9,   /* field[9] = ad */
@@ -911,6 +1111,8 @@ static const unsigned character_message__field_indices_by_name[] = {
   7,   /* field[7] = hp */
   0,   /* field[0] = id */
   3,   /* field[3] = level */
+  10,   /* field[10] = max_hp */
+  11,   /* field[11] = max_mp */
   8,   /* field[8] = mp */
   1,   /* field[1] = nickname */
   6,   /* field[6] = pos_x */
@@ -919,7 +1121,7 @@ static const unsigned character_message__field_indices_by_name[] = {
 static const ProtobufCIntRange character_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 10 }
+  { 0, 12 }
 };
 const ProtobufCMessageDescriptor character_message__descriptor =
 {
@@ -929,14 +1131,14 @@ const ProtobufCMessageDescriptor character_message__descriptor =
   "CharacterMessage",
   "",
   sizeof(CharacterMessage),
-  10,
+  12,
   character_message__field_descriptors,
   character_message__field_indices_by_name,
   1,  character_message__number_ranges,
   (ProtobufCMessageInit) character_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
+static const ProtobufCFieldDescriptor creature_message__field_descriptors[9] =
 {
   {
     "id",
@@ -1023,32 +1225,45 @@ static const ProtobufCFieldDescriptor creature_message__field_descriptors[8] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "ad",
+    "exp",
     8,
     PROTOBUF_C_LABEL_REQUIRED,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(CreatureMessage, ad),
+    offsetof(CreatureMessage, exp),
     NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "state",
+    9,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(CreatureMessage, state),
+    &creature_state__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
 static const unsigned creature_message__field_indices_by_name[] = {
-  7,   /* field[7] = ad */
   1,   /* field[1] = category */
+  7,   /* field[7] = exp */
   5,   /* field[5] = hp */
   0,   /* field[0] = id */
   2,   /* field[2] = level */
   6,   /* field[6] = max_hp */
   4,   /* field[4] = pos_x */
   3,   /* field[3] = pos_y */
+  8,   /* field[8] = state */
 };
 static const ProtobufCIntRange creature_message__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 8 }
+  { 0, 9 }
 };
 const ProtobufCMessageDescriptor creature_message__descriptor =
 {
@@ -1058,7 +1273,7 @@ const ProtobufCMessageDescriptor creature_message__descriptor =
   "CreatureMessage",
   "",
   sizeof(CreatureMessage),
-  8,
+  9,
   creature_message__field_descriptors,
   creature_message__field_indices_by_name,
   1,  creature_message__number_ranges,
@@ -1165,5 +1380,210 @@ const ProtobufCMessageDescriptor logout_message__descriptor =
   logout_message__field_indices_by_name,
   1,  logout_message__number_ranges,
   (ProtobufCMessageInit) logout_message__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor skill_message__field_descriptors[7] =
+{
+  {
+    "source_type",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, source_type),
+    &unit_type__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "source_id",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, source_id),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "target_type",
+    3,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, target_type),
+    &unit_type__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "target_id",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, target_id),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "skill",
+    5,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, skill),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "source_mp",
+    6,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, source_mp),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "target_hp",
+    7,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SkillMessage, target_hp),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned skill_message__field_indices_by_name[] = {
+  4,   /* field[4] = skill */
+  1,   /* field[1] = source_id */
+  5,   /* field[5] = source_mp */
+  0,   /* field[0] = source_type */
+  6,   /* field[6] = target_hp */
+  3,   /* field[3] = target_id */
+  2,   /* field[2] = target_type */
+};
+static const ProtobufCIntRange skill_message__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 7 }
+};
+const ProtobufCMessageDescriptor skill_message__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "SkillMessage",
+  "SkillMessage",
+  "SkillMessage",
+  "",
+  sizeof(SkillMessage),
+  7,
+  skill_message__field_descriptors,
+  skill_message__field_indices_by_name,
+  1,  skill_message__number_ranges,
+  (ProtobufCMessageInit) skill_message__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor creature_state_change_message__field_descriptors[2] =
+{
+  {
+    "id",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(CreatureStateChangeMessage, id),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "state",
+    2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_ENUM,
+    0,   /* quantifier_offset */
+    offsetof(CreatureStateChangeMessage, state),
+    &creature_state__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned creature_state_change_message__field_indices_by_name[] = {
+  0,   /* field[0] = id */
+  1,   /* field[1] = state */
+};
+static const ProtobufCIntRange creature_state_change_message__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor creature_state_change_message__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "CreatureStateChangeMessage",
+  "CreatureStateChangeMessage",
+  "CreatureStateChangeMessage",
+  "",
+  sizeof(CreatureStateChangeMessage),
+  2,
+  creature_state_change_message__field_descriptors,
+  creature_state_change_message__field_indices_by_name,
+  1,  creature_state_change_message__number_ranges,
+  (ProtobufCMessageInit) creature_state_change_message__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor reset_key_message__field_descriptors[1] =
+{
+  {
+    "key",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(ResetKeyMessage, key),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned reset_key_message__field_indices_by_name[] = {
+  0,   /* field[0] = key */
+};
+static const ProtobufCIntRange reset_key_message__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 1 }
+};
+const ProtobufCMessageDescriptor reset_key_message__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "ResetKeyMessage",
+  "ResetKeyMessage",
+  "ResetKeyMessage",
+  "",
+  sizeof(ResetKeyMessage),
+  1,
+  reset_key_message__field_descriptors,
+  reset_key_message__field_indices_by_name,
+  1,  reset_key_message__number_ranges,
+  (ProtobufCMessageInit) reset_key_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };

@@ -18,7 +18,9 @@ typedef struct character_status {
     int exp;
     int pos_y;
     int pos_x;
+    int max_hp;
     int hp;
+    int max_mp;
     int mp;
     int ad;
     struct timeval last_move;
@@ -30,6 +32,12 @@ const int EXP_TO_UPGRADE[CHARACTER_MAX_LEVEL + 1];
 const int CHARACTER_AD[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
 const int CHARACTER_MAX_HP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
 const int CHARACTER_MAX_MP[CHARACTER_CLASS_TYPES][CHARACTER_MAX_LEVEL + 1];
+
+const int SKILL_CD[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const float SKILL_RANGE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_TARGET_TYPE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_DAMAGE_RATE[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
+const int SKILL_MP_COST[CHARACTER_CLASS_TYPES][NUM_SKILLS_PER_CLASS];
 
 Character *init_character(int class, char *nickname);
 

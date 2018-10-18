@@ -10,6 +10,8 @@ void init_world(int id);
 
 void sync_move(void);
 
-void sync_skill(int skill);
+int sync_skill(int skill);
+
+void send_keep_connection_request();
 
 #endif //CLIENT_SYNC_H

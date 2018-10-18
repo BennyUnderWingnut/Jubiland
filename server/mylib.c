@@ -1,6 +1,6 @@
 #include "mylib.h"
 
-int set_ticker(n_msecs) {
+int set_ticker(long n_msecs) {
     struct itimerval new_timeset;
     long n_sec, n_usecs;
 
@@ -22,3 +22,13 @@ void create_detached_thread(void *(*start_routine)(void *), void *arg) {
     pthread_attr_setdetachstate(&attr_detached, PTHREAD_CREATE_DETACHED);
     pthread_create(&t, &attr_detached, start_routine, arg);
 }
+
+double get_euclidean_distance(int y1, int x1, int y2, int x2) {
+    return sqrt((y1 - y2) * (y1 - y2) + (x1 - x2) * (x1 - x2));
+};
+
+float time_pass_since(struct timeval t) {
+    struct timeval cur;
+    gettimeofday(&cur, NULL);
+    return cur.tv_sec - t.tv_sec + (float) (cur.tv_usec - t.tv_usec) / 1000000;
+};

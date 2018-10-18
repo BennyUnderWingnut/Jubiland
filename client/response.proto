@@ -7,12 +7,14 @@ message Response {
         REFUSE_LOGIN = 1;
         WORLD_STATE = 2;
         EVENTS = 4;
+        RESET_KEY = 5;
     }
     required Type type = 1;
     optional WelcomeMessage welcomeMsg = 2;
     optional RefuseLoginMessage refuseLogin = 3;
     optional WorldStateMessage worldState = 4;
     optional EventsMessage events = 5;
+    optional ResetKeyMessage resetKey = 6;
 }
 
 message WelcomeMessage {
@@ -30,6 +32,8 @@ message EventsMessage {
     repeated MoveMessage aimoves = 2;
     repeated CharacterMessage newcomers = 3;
     repeated LogoutMessage logouts = 4;
+    repeated SkillMessage skills = 5;
+    repeated CreatureStateChangeMessage cschanges = 6;
 }
 
 message RefuseLoginMessage {
@@ -52,6 +56,8 @@ message CharacterMessage {
     required int32 hp = 8;
     required int32 mp = 9;
     required int32 ad = 10;
+    required int32 max_hp = 11;
+    required int32 max_mp = 12;
 }
 
 message CreatureMessage {
@@ -62,7 +68,8 @@ message CreatureMessage {
     required int32 pos_x = 5;
     required int32 hp = 6;
     required int32 max_hp = 7;
-    required int32 ad = 8;
+    required int32 exp = 8;
+    required CreatureState state = 9;
 }
 
 message MoveMessage {
@@ -73,4 +80,23 @@ message MoveMessage {
 
 message LogoutMessage {
     required int32 id = 1;
+}
+
+message SkillMessage {
+    required UnitType source_type = 1;
+    required int32 source_id = 2;
+    required UnitType target_type = 3;
+    required int32 target_id = 4;
+    required int32 skill = 5;
+    required int32 source_mp = 6;
+    required int32 target_hp = 7;
+}
+
+message CreatureStateChangeMessage {
+    required int32 id = 1;
+    required CreatureState state = 2;
+}
+
+message ResetKeyMessage {
+    required int32 key = 1;
 }

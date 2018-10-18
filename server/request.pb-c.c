@@ -187,17 +187,19 @@ void   skill_request__free_unpacked
   assert(message->base.descriptor == &skill_request__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCEnumValue request__type__enum_values_by_number[3] =
+static const ProtobufCEnumValue request__type__enum_values_by_number[4] =
 {
   { "LOGIN", "REQUEST__TYPE__LOGIN", 0 },
   { "MOVE", "REQUEST__TYPE__MOVE", 1 },
   { "SKILL", "REQUEST__TYPE__SKILL", 2 },
+  { "KEEP", "REQUEST__TYPE__KEEP", 4 },
 };
 static const ProtobufCIntRange request__type__value_ranges[] = {
-{0, 0},{0, 3}
+{0, 0},{4, 3},{0, 4}
 };
-static const ProtobufCEnumValueIndex request__type__enum_values_by_name[3] =
+static const ProtobufCEnumValueIndex request__type__enum_values_by_name[4] =
 {
+  { "KEEP", 3 },
   { "LOGIN", 0 },
   { "MOVE", 1 },
   { "SKILL", 2 },
@@ -209,15 +211,15 @@ const ProtobufCEnumDescriptor request__type__descriptor =
   "Type",
   "Request__Type",
   "",
-  3,
+  4,
   request__type__enum_values_by_number,
-  3,
+  4,
   request__type__enum_values_by_name,
-  1,
+  2,
   request__type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor request__field_descriptors[4] =
+static const ProtobufCFieldDescriptor request__field_descriptors[5] =
 {
   {
     "type",
@@ -232,8 +234,20 @@ static const ProtobufCFieldDescriptor request__field_descriptors[4] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "login",
+    "key",
     2,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(Request, key),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "login",
+    3,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
@@ -245,7 +259,7 @@ static const ProtobufCFieldDescriptor request__field_descriptors[4] =
   },
   {
     "move",
-    3,
+    4,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
@@ -257,7 +271,7 @@ static const ProtobufCFieldDescriptor request__field_descriptors[4] =
   },
   {
     "skill",
-    4,
+    5,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
@@ -269,15 +283,16 @@ static const ProtobufCFieldDescriptor request__field_descriptors[4] =
   },
 };
 static const unsigned request__field_indices_by_name[] = {
-  1,   /* field[1] = login */
-  2,   /* field[2] = move */
-  3,   /* field[3] = skill */
+  1,   /* field[1] = key */
+  2,   /* field[2] = login */
+  3,   /* field[3] = move */
+  4,   /* field[4] = skill */
   0,   /* field[0] = type */
 };
 static const ProtobufCIntRange request__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 4 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor request__descriptor =
 {
@@ -287,7 +302,7 @@ const ProtobufCMessageDescriptor request__descriptor =
   "Request",
   "",
   sizeof(Request),
-  4,
+  5,
   request__field_descriptors,
   request__field_indices_by_name,
   1,  request__number_ranges,
@@ -345,32 +360,8 @@ const ProtobufCMessageDescriptor login_request__descriptor =
   (ProtobufCMessageInit) login_request__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor move_request__field_descriptors[4] =
+static const ProtobufCFieldDescriptor move_request__field_descriptors[2] =
 {
-  {
-    "id",
-    1,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(MoveRequest, id),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "key",
-    2,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(MoveRequest, key),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
   {
     "pos_x",
     3,
@@ -397,15 +388,13 @@ static const ProtobufCFieldDescriptor move_request__field_descriptors[4] =
   },
 };
 static const unsigned move_request__field_indices_by_name[] = {
-  0,   /* field[0] = id */
-  1,   /* field[1] = key */
-  2,   /* field[2] = pos_x */
-  3,   /* field[3] = pos_y */
+  0,   /* field[0] = pos_x */
+  1,   /* field[1] = pos_y */
 };
 static const ProtobufCIntRange move_request__number_ranges[1 + 1] =
 {
-  { 1, 0 },
-  { 0, 4 }
+  { 3, 0 },
+  { 0, 2 }
 };
 const ProtobufCMessageDescriptor move_request__descriptor =
 {
@@ -415,7 +404,7 @@ const ProtobufCMessageDescriptor move_request__descriptor =
   "MoveRequest",
   "",
   sizeof(MoveRequest),
-  4,
+  2,
   move_request__field_descriptors,
   move_request__field_indices_by_name,
   1,  move_request__number_ranges,

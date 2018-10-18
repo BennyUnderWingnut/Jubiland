@@ -27,7 +27,8 @@ typedef struct _SkillRequest SkillRequest;
 typedef enum _Request__Type {
   REQUEST__TYPE__LOGIN = 0,
   REQUEST__TYPE__MOVE = 1,
-  REQUEST__TYPE__SKILL = 2
+  REQUEST__TYPE__SKILL = 2,
+  REQUEST__TYPE__KEEP = 4
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(REQUEST__TYPE)
 } Request__Type;
 
@@ -37,13 +38,14 @@ struct  _Request
 {
   ProtobufCMessage base;
   Request__Type type;
+  int32_t key;
   LoginRequest *login;
   MoveRequest *move;
   SkillRequest *skill;
 };
 #define REQUEST__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&request__descriptor) \
-    , REQUEST__TYPE__LOGIN, NULL, NULL, NULL }
+    , REQUEST__TYPE__LOGIN, 0, NULL, NULL, NULL }
 
 
 struct  _LoginRequest
@@ -60,14 +62,12 @@ struct  _LoginRequest
 struct  _MoveRequest
 {
   ProtobufCMessage base;
-  int32_t id;
-  int32_t key;
   int32_t pos_x;
   int32_t pos_y;
 };
 #define MOVE_REQUEST__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&move_request__descriptor) \
-    , 0, 0, 0, 0 }
+    , 0, 0 }
 
 
 struct  _SkillRequest

@@ -1,13 +1,31 @@
 #include "map.h"
 
-int map[MAP_LINES][MAP_COLS] = {0};
+TerrainType map[MAP_LINES][MAP_COLS] = {0};
 
 void init_map() {
-    int i, j;
+    int i, j, k, l;
 
     for (i = 0; i < MAP_LINES; i++)
         for (j = 0; j < MAP_COLS; j++)
             map[i][j] = TERRAIN_GRASS;
+
+    for (i = 1; i < MAP_LINES - 1; i += 14)
+        for (j = 1; j < MAP_COLS; j += 25)
+            map[(i * j + i + j + 13) % MAP_LINES][(j * i + j * 123 + 451) % MAP_COLS] = TERRAIN_ROSE;
+
+    for (i = 1; i < MAP_LINES - 1; i += 13)
+        for (j = 1; j < MAP_COLS; j += 14)
+            map[(i * j + i + j + 53) % MAP_LINES][(j * i + j * 19 + 12) % MAP_COLS] = TERRAIN_TULIP;
+
+    for (i = 0; i < MAP_LINES; i++) {
+        map[i][(i * i * i + 1324 * i + 11983) % MAP_LINES] = TERRAIN_TREE;
+        map[i][(i * i * i + 124 * i + 14334) % MAP_LINES] = TERRAIN_TREE;
+        map[i][(i * i * i + 1542 * i + 13513) % MAP_LINES] = TERRAIN_TREE;
+        map[i][(i * i * i + 721 * i + 8423) % MAP_LINES] = TERRAIN_TREE;
+    }
+
+    for (i = 0; i < MAP_LINES; i++)
+        map[i][(i * i * i + 285 * i + 1351) % MAP_LINES] = TERRAIN_CAMP;
 
     /* surrounding mountains */
     for (i = 0; i < MAP_LINES; i++) {
@@ -19,8 +37,26 @@ void init_map() {
         map[MAP_LINES - 1][j] = TERRAIN_MOUNTAIN;
     }
 
-    for (i = 4; i < MAP_LINES; i += 10) {
-        for (j = 1; j < 10; j++)
-            map[i][j] = TERRAIN_WATER;
-    }
+    for (i = 20; i < MAP_LINES; i = i + i % 7 + 60)
+        for (j = i % 3; j < MAP_COLS; j = j + j % 6 + i % 5 + 92) {
+            for (k = 0; k < i % 10 + 42; k++)
+                map[i][j + k] = TERRAIN_WATER;
+            for (k = 0; k < i % 10 + j % 24; k++)
+                for (l = 0; l < j % 5 + j % 30; l++) {
+                    if (k % 7 == 4 && l % 8 == 5) map[i + k - l % 3][j + l - k % 2] = TERRAIN_ISLAND;
+                    map[i + k][j + l] = TERRAIN_WATER;
+                }
+        }
+
+    for (i = 10; i < MAP_LINES; i = i + i % 5 + 80)
+        for (j = i % 8; j < MAP_COLS; j = j + j % 7 + i % 4 + 74) {
+            for (k = 0; k < j % 9 + 30; k++)
+                map[i + k][j] = TERRAIN_WATER;
+            for (k = 0; k < j % 9 + j % 20; k++)
+                for (l = 0; l < j % 12 + j % 20; l++) {
+                    map[i + k][j + l] = TERRAIN_WATER;
+                    if (k % 10 == 6 && l % 7 == 4) map[i + k - l % 2][j + l - k % 3] = TERRAIN_ISLAND;
+                }
+        }
+
 }

@@ -6,11 +6,13 @@ message Request {
         LOGIN = 0;
         MOVE = 1;
         SKILL = 2;
+        KEEP = 4;
     }
     required Type type = 1;
-    optional LoginRequest login = 2;
-    optional MoveRequest move = 3;
-    optional SkillRequest skill = 4;
+    required int32 key = 2;
+    optional LoginRequest login = 3;
+    optional MoveRequest move = 4;
+    optional SkillRequest skill = 5;
 }
 
 message LoginRequest {
@@ -19,8 +21,6 @@ message LoginRequest {
 }
 
 message MoveRequest {
-    required int32 id = 1;
-    required int32 key = 2;
     required int32 pos_x = 3;
     required int32 pos_y = 4;
 }
