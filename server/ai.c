@@ -141,5 +141,6 @@ void *ai_loop() {
         }
         pthread_mutex_unlock(&connectionQueue->queue_lock);
     }
+    printf("AI loop ends\n");
     return NULL;
 }

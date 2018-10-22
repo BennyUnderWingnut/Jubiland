@@ -96,7 +96,6 @@ void *handle_call(void *fdptr) {
 }
 
 void *listen_port() {
-    running = 1;
     int fd, rv, max_fd;
     Connection *conn, *next;
     fd_set set;
@@ -309,6 +308,7 @@ void *begin_broadcast() {
 }
 
 void init_server(int port, int threads, int max_jobs, int max_connections) {
+    running = 1;
     init_map();
     init_creatures();
     init_characters();

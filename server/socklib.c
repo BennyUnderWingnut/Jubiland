@@ -71,7 +71,7 @@ Request *get_request(int fd, int *stat) {
     }
     size[i] = '\0';
     long msg_size = strtol(size, NULL, 10);
-    printf("Message size = %ld bytes\n", msg_size);
+    // printf("Message size = %ld bytes\n", msg_size);
     if (msg_size <= 0) {
         fprintf(stderr, "Illegal message length\n");
         return NULL;
@@ -85,7 +85,7 @@ Request *get_request(int fd, int *stat) {
         else rv = recv(fd, buf, (size_t) (msg_size - received), 0);
         memcpy(msg + received, buf, BUFF_SIZE);
         received += rv;
-        printf("%ld bytes received from %d.\n", received, fd);
+        // printf("%ld bytes received from %d.\n", received, fd);
     }
     Request *req = request__unpack(NULL, (size_t) msg_size, msg);
     return req;
