@@ -1,11 +1,10 @@
 #include "server.h"
 
-void init_server(int port, int threads, int max_jobs, int max_connections);
+void init_server(int port, int threads, int max_connections);
 
 void *listen_port();
 
-int sock, running, wakeup_count;
-//ThreadPool *threadPool;
+int sock, running, wakeup_count, use_pool;
 threadpool thpool;
 ConnectionQueue *connectionQueue;
 MoveEventQueue *characterMoveEventQueue;
@@ -18,21 +17,24 @@ pthread_mutex_t ai_move_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t remove_not_responding_connections_lock = PTHREAD_MUTEX_INITIALIZER;
 
 int main(int ac, char *av[]) {
-    int threads = DEFAULT_NUM_THREADS;
-    int jobs = DEFAULT_MAX_NUM_JOBS;
-    int connections = DEFAULT_MAX_NUM_PLAYERS;
-    if (ac == 1) {
-        fprintf(stderr, "usage: tws portnum\n");
+    if (ac != 4) {
+        fprintf(stderr, "usage: server PORT N_CONNECTIONS N_THREAD_POOL_THREADS\n");
         exit(1);
     }
     int port = (int) strtol(av[1], NULL, 10);
-    if (ac >= 3)
-        threads = (int) strtol(av[2], NULL, 10);
-    if (ac >= 4)
-        jobs = (int) strtol(av[3], NULL, 10);
-    if (ac >= 5)
-        connections = (int) strtol(av[3], NULL, 10);
-    init_server(port, threads, jobs, connections);
+    if (port == 0) {
+        perror("invalid port number");
+        exit(1);
+    }
+    int connections = (int) strtol(av[2], NULL, 10);
+    if (connections == 0) {
+        perror("invalid number of connections");
+        exit(1);
+    }
+    int threads = (int) strtol(av[3], NULL, 10);
+    if (threads > 1) use_pool = 1;
+    else use_pool = 0;
+    init_server(port, threads, connections);
 }
 
 void stop_listening() {
@@ -44,7 +46,7 @@ void *handle_call(void *fdptr) {
     int rv, rm_conn = 0, fd = *(int *) fdptr;
     Connection *conn = connection_queue_get_connection(connectionQueue, fd);
     if (conn == NULL) {
-        fprintf(stderr, "Cannot get _Connection\n");
+        fprintf(stderr, "Cannot get Connection\n");
         return NULL;
     }
     Request *req;
@@ -60,7 +62,7 @@ void *handle_call(void *fdptr) {
                 if (req->login == NULL) break;
                 rv = add_character(connectionQueue, conn, req->login->class_, req->login->nickname);
                 if (rv) {
-                    printf("Failed login, Connection removed.");
+                    printf("Failed login, Connection removed\n");
                     send_login_fail(conn, rv);
                     rm_conn = 1;
                 } else {
@@ -88,9 +90,12 @@ void *handle_call(void *fdptr) {
         }
         request__free_unpacked(req, NULL);
     }
-    conn->listened = 0;
-    if (rm_conn)
+    pthread_mutex_unlock(&conn->listen_lock);
+    if (rm_conn) {
+        pthread_mutex_lock(&connectionQueue->queue_lock);
         connection_queue_remove_connection(connectionQueue, conn);
+        pthread_mutex_unlock(&connectionQueue->queue_lock);
+    }
     free(stat);
     return NULL;
 }
@@ -100,8 +105,6 @@ void *listen_port() {
     Connection *conn, *next;
     fd_set set;
     struct timeval timeout;
-    timeout.tv_sec = TIMEOUT_SEC;
-    timeout.tv_usec = 0;
     signal(SIGINT, stop_listening);
     signal(SIGTERM, stop_listening);
     signal(SIGPIPE, handle_sigpipe);
@@ -109,9 +112,12 @@ void *listen_port() {
         max_fd = sock;
         FD_ZERO(&set);
         FD_SET(sock, &set);
+        timeout.tv_sec = TIMEOUT_SEC;
+        timeout.tv_usec = TIMEOUT_USEC;
         conn = connectionQueue->head->next;
         while (conn != NULL) {
-            if (!conn->listened) {
+            if (pthread_mutex_trylock(&conn->listen_lock) == 0) {
+                pthread_mutex_unlock(&conn->listen_lock);
                 FD_SET(conn->fd, &set);
                 if (conn->fd > max_fd) max_fd = conn->fd;
             }
@@ -132,11 +138,9 @@ void *listen_port() {
             while (conn != NULL) {
                 next = conn->next;
                 if (FD_ISSET(conn->fd, &set)) {
-                    conn->listened = 1;
-                    handle_call(&conn->fd);
-                    //create_detached_thread(handle_call, &conn->fd);
-                    //thread_pool_add_job(threadPool, handle_call, &conn->fd);
-                    //thpool_add_work(thpool, (void *) handle_call, &conn->fd);
+                    pthread_mutex_lock(&conn->listen_lock);
+                    if (use_pool) thpool_add_work(thpool, (void *) handle_call, &conn->fd);
+                    else handle_call(&conn->fd);
                 }
                 conn = next;
             }
@@ -307,7 +311,7 @@ void *begin_broadcast() {
     return NULL;
 }
 
-void init_server(int port, int threads, int max_jobs, int max_connections) {
+void init_server(int port, int threads, int max_connections) {
     running = 1;
     init_map();
     init_creatures();
@@ -320,8 +324,7 @@ void init_server(int port, int threads, int max_jobs, int max_connections) {
 
     sock = make_server_socket(port);
     if (sock == -1) exit(2);
-    //threadPool = thread_pool_init(threads, max_jobs);
-    thpool = thpool_init(threads);
+    if (use_pool) thpool = thpool_init(threads);
     connectionQueue = connection_queue_init(max_connections);
     characterMoveEventQueue = move_event_queue_init();
     aiMoveEventQueue = move_event_queue_init();

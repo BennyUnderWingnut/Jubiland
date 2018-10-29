@@ -63,8 +63,10 @@ int send_request(int sock, Request req) {
     buf = malloc(len);
     request__pack(&req, buf);
     sprintf(size_buf, "%ld\n", len);
+    pthread_mutex_lock(&sock_write_lock);
     send(sock, size_buf, strlen(size_buf), 0);
     send(sock, buf, len, 0);
+    pthread_mutex_unlock(&sock_write_lock);
     free(buf); // Free the allocated serialized buffer
     return 0;
 }

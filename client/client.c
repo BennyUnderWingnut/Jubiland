@@ -51,6 +51,7 @@ void bind_signals() {
 }
 
 void keep_connection(void) {
+    pthread_mutex_init(&sock_write_lock, NULL);
     signal(SIGALRM, send_keep_connection_request);
 
     create_detached_thread(keep_connection_loop, NULL);

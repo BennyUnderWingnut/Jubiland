@@ -113,6 +113,7 @@ int move_character(Connection *connection, int y, int x) {
         pthread_mutex_unlock(&connection->character_data_lock);
         return -2;
     }
+    if ((abs(y - connection->character->pos_y) + abs(x - connection->character->pos_x) > 1)) return -3;
     struct timeval last_move = connection->character->last_move;
     struct timeval this_move;
     gettimeofday(&this_move, NULL);

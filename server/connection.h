@@ -2,7 +2,6 @@
 #define SERVER_LOGIN_H
 
 
-//#include "thread_pool.h"
 #include "thpool.h"
 #include "socklib.h"
 #include "request.pb-c.h"
@@ -14,9 +13,9 @@
 
 typedef struct _Connection {
     int fd;
-    int listened; // socket is being listened
     int key; // key used to verify client
     struct timeval last_keep_connection;
+    pthread_mutex_t listen_lock; // socket is being listened
     pthread_mutex_t character_data_lock;
     Character *character;
     struct _Connection *prev;

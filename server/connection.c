@@ -25,12 +25,12 @@ int connection_queue_add_connection(ConnectionQueue *queue, int fd) {
     }
     Connection *conn = malloc(sizeof(Connection));
     conn->fd = fd;
-    conn->listened = 0;
     conn->key = (int) random();
     conn->next = queue->head->next;
     conn->prev = queue->head;
     gettimeofday(&conn->last_keep_connection, NULL);
     conn->character = NULL;
+    pthread_mutex_init(&conn->listen_lock, NULL);
     pthread_mutex_init(&conn->character_data_lock, NULL);
     if (queue->head->next != NULL)
         queue->head->next->prev = conn;
@@ -50,7 +50,6 @@ int remove_character(Connection *conn) {
 }
 
 int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn) {
-    pthread_mutex_lock(&queue->queue_lock);
     if (conn->character != NULL) {
         add_logout_event(logoutEventQueue, conn->character->id);
         remove_character(conn);
@@ -63,7 +62,6 @@ int connection_queue_remove_connection(ConnectionQueue *queue, Connection *conn)
     free(conn);
     printf("Connection freed\n");
     queue->connection_num--;
-    pthread_mutex_unlock(&queue->queue_lock);
     return 1;
 }
 

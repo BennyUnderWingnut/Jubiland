@@ -10,6 +10,7 @@
 #include <time.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "request.pb-c.h"
 #include "response.pb-c.h"
 
@@ -23,5 +24,7 @@ int connect_to_server(char *host, int port);
 Response *get_response(int fd);
 
 int send_request(int sock, Request req);
+
+pthread_mutex_t sock_write_lock;
 
 #endif //CLIENT_SOCKET_H

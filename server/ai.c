@@ -86,8 +86,8 @@ void *ai_loop() {
                         }
                         if (nearest_conn == NULL) break;
                         // go to nearest threat's position
-                        if (time_pass_since(creatures[i].last_move_time) >= CREATURE_MOVE_INTERVAL_SEC &&
-                            nearest_dist > 1.5) {
+                        if (time_pass_since(creatures[i].last_move_time) >=
+                            1.0 / CREATURE_SPEED[creatures[i].category][creatures[i].level] && nearest_dist > 1.5) {
                             int *next_pos_y = malloc(sizeof(int)), *next_pos_x = malloc(sizeof(int));
                             if (get_next_pos(creatures[i].pos_y, creatures[i].pos_x, nearest_pos_y, nearest_pos_x,
                                              next_pos_y, next_pos_x) == 0) {
